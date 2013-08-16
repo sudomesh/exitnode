@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# Captive portal redirect for www.apple.com
+
+# TODO: We need a script that changes this rule every time the caching dns server updates the entry for e.g. www.apple.com
+# TODO: We need redirect rules for windows and android devices as well.
+
+# Redirects requests to the IP for www.apple.com to a local squid server
+iptables -t nat -A PREROUTING -i bat0 -p tcp -d 184.85.61.15 --dport 80 -j REDIRECT --to-port 3128

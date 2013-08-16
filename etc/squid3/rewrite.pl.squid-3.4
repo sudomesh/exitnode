@@ -1,0 +1,21 @@
+#!/usr/bin/perl
+
+$splash_response = "OK rewrite-url=http://localhost/splash.html\n";
+
+$|=1;
+while (<>) {
+    chomp;
+    @line = split;
+    $url = $line[0];
+    if ($url =~ /^http:\/\/www\.apple\.com\/library\/test\/success\.html/) {
+
+        print $splash_response;
+
+    } elsif ($url =~ /^http:\/\/www\.apple\.com\/$/) {
+
+        print $splash_response;
+
+    } else {
+        print "ERR\n";
+    }
+}
