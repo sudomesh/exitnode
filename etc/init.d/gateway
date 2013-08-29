@@ -7,7 +7,6 @@ ETH=eth0
 iptables -t nat -A POSTROUTING -o $ETH -j MASQUERADE
 echo 1 > /proc/sys/net/ipv4/ip_forward
 
-# don't allow new incoming connections from ethernet
 iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
 iptables -A INPUT -m state --state NEW ! -i $ETH -j ACCEPT
 
