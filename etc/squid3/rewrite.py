@@ -13,6 +13,9 @@ splash_click_regex = "^http://click.splash.*"
 probe_regex_apple = "^http://www\.apple\.com/library/test/success\.html.*"
 splash_regex_apple = "^http://www.apple.com(/?)"
 
+probe_regex_android = "^http://clients3\.google\.com/generate_204\.html.*"
+splash_regex_android = "^http://clients3.google.com(/?)"
+
 conn = psycopg2.connect(host="127.0.0.1", database="captive", user="captive", password="?fakingthecaptive?")
 cur = conn.cursor()
 
@@ -58,13 +61,13 @@ while(True):
         continue
 
     ip = d[1]
-    
+
     if(re.match(probe_regex_apple, url)):
 
         debug("apple probe from: " + ip)
-        
+
         if(did_user_already_click(ip)):
-            
+
             debug("user already clicked through. letting probe pass.")
 
             print url
@@ -75,12 +78,45 @@ while(True):
 
             print splash_url
 
+    elif(re.match(probe_regex_android, url)):
+
+        debug("android probe from: " + ip)
+
+        if(did_user_already_click(ip)):
+
+            debug("user already clicked through. letting probe pass.")
+
+            print url
+
+        else:
+
+            debug("blocking probe")
+
+            print splash_url
+
+
     elif(re.match(splash_regex_apple, url)):
 
         debug("apple splash page fetch from: " + ip)
 
         if(did_user_already_click(ip)):
-            
+
+            debug("user already clicked through. not showing splash page")
+
+            print url
+
+        else:
+
+            debug("showing splash page")
+
+            print splash_url
+
+    elif(re.match(splash_regex_android, url)):
+
+        debug("android splash page fetch from: " + ip)
+
+        if(did_user_already_click(ip)):
+
             debug("user already clicked through. not showing splash page")
 
             print url
