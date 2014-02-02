@@ -3,6 +3,7 @@
 import psycopg2
 import re
 import sys
+from datetime import datetime, timedelta
 
 DEBUG = False
 
@@ -38,8 +39,10 @@ def did_user_already_click(ip):
     row = cur.fetchone()
 
     if(row):
-        # TODO check expiration time
-        return True
+        if (datetime.now() - row.timestamp) < timedelta (hours = 24):
+            return True
+        else:
+            return False
     else:
         return False
 
