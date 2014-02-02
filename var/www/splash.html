@@ -1,14 +1,100 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <title>peopleswifi.org</title>
-    </head>
+<html>
+    <head></head>
+    <style>
+        body{
+            background-color: #555555
+        }
+        .container{
+            top:400px;
+            width: 800px;
+            margin:300px auto 0;
+            min-height: 400px;
+            border-radius: 15px;
+            background-color: #20b24b;
+        }
+        
+        .button{
+            font-family: monospace;
+            font-size: 14px;
+            font-size: 100%;
+            padding: .5em 1.5em;
+            color: #444;
+            color: rgba(0,0,0,.8);
+            border: 1px solid #999;
+            border: 0 rgba(0,0,0,0);
+            background-color: #E6E6E6;
+            text-decoration: none;
+            border-radius: 2px; 
+            -webkit-transition: .1s linear -webkit-box-shadow;
+            -moz-transition: .1s linear -moz-box-shadow;
+            -ms-transition: .1s linear box-shadow;
+            -o-transition: .1s linear box-shadow;
+            transition: .1s linear box-shadow;
+            display: inline-block;
+            zoom: 1;
+            line-height: normal;
+            white-space: nowrap;
+            vertical-align: baseline;
+            text-align: center;
+            cursor: pointer;
+            -webkit-user-drag: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            */
+        }
+        .content-container{
+            margin: 0 auto;
+            width: 500px;
+            padding 0 auto;
+        }
+
+        .logo-container{
+            font-family: Impact, Charcoal, sans-serif;
+            font-size: 40px;
+            color: #ffffff;
+            -webkit-text-stroke-width: 1px;
+            -webkit-text-stroke-color: black;
+            margin: 0 auto;
+            min-height: 50px;
+            max-width: 400px;
+            outline: dashed blue;
+            padding-top: 15px;
+            padding-left:0 auto !important;
+        }
+        .welcome-blurb{
+            margin: 0 auto !important;
+            border-radius: 20px;
+            background-color:#ffffff;
+            font-family: "Trebuchet MS", Helvetica, sans-serif;
+            font-size: 12px;
+            min-height: 175px;
+            padding:20px;
+        }
+        
+        .button-container{
+            margin: 0 auto;
+            width:420px !important;
+            height: 30px;
+        }
+        
+    </style>
     <body>
-        <h1>Welcome to People's Wifi</h1>
-        <p>
-          Click <a href='https://sudoroom.org/'>here</a> to continue!
-        </p>
+        <div class="container">
+            <div class="content-container">
+                <div class="logo-container">Welcome to SudoMesh</div>
+                <div class="welcome-blurb">
+                    <span>
+                        Free Wireless Internet and Local Network in Oakland, California<br/><br/>
+Community driven, open source, peer-to-peer internet. Watch the video below for more information on mesh networking, and stay tuned for updates from the People's Open Network.
+                    </span>
+                </div><br/>
+                    <div class="button-container">    
+                        <div class="left button">Connect to the Mesh</div>
+                        <div class="left button">Connect to the Internet</div>    
+                </div><!--button container -->
+            </div><!-- content container-->
+        </div><!-- master container -->
     </body>
 </html>
-
