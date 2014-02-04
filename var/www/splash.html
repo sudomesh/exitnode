@@ -14,8 +14,10 @@
         }
         
         .button{
+            /*height: 50px;
+            width: 250px;*/
             font-family: monospace;
-            font-size: 14px;
+            font-size: 20px;
             font-size: 100%;
             padding: .5em 1.5em;
             color: #444;
@@ -42,11 +44,14 @@
             -moz-user-select: none;
             -ms-user-select: none;
             user-select: none;
-            */
+            
+        }
+        .button:hover{
+            font-family:Impact, Charcoal, sans-serif !important;
         }
         .content-container{
             margin: 0 auto;
-            width: 500px;
+            width: 600px;
             padding 0 auto;
         }
 
@@ -58,8 +63,8 @@
             -webkit-text-stroke-color: black;
             margin: 0 auto;
             min-height: 50px;
-            max-width: 400px;
-            outline: dashed blue;
+            max-width: 550px;
+            padding-bottom:20px;
             padding-top: 15px;
             padding-left:0 auto !important;
         }
@@ -71,6 +76,7 @@
             font-size: 12px;
             min-height: 175px;
             padding:20px;
+            
         }
         
         .button-container{
@@ -79,20 +85,21 @@
             height: 30px;
         }
         
+
     </style>
     <body>
         <div class="container">
             <div class="content-container">
-                <div class="logo-container">Welcome to SudoMesh</div>
+                <div class="logo-container">Welcome to PeoplesOpenNetwork</div>
                 <div class="welcome-blurb">
                     <span>
-                        Free Wireless Internet and Local Network in Oakland, California<br/><br/>
+                        A *FREE* Wireless Internet and Local Network in Oakland, California<br/><br/>
 Community driven, open source, peer-to-peer internet. Watch the video below for more information on mesh networking, and stay tuned for updates from the People's Open Network.
                     </span>
                 </div><br/>
                     <div class="button-container">    
-                        <div class="left button">Connect to the Mesh</div>
-                        <div class="left button">Connect to the Internet</div>    
+                        <a href="#"><div class="left button" >Connect to the Mesh</div></a>
+                        <a href="#"><div class="left button" href="#">Connect to the Internet</div></a>
                 </div><!--button container -->
             </div><!-- content container-->
         </div><!-- master container -->
