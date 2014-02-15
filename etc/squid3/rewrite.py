@@ -5,7 +5,7 @@ import re
 import sys
 from datetime import datetime, timedelta
 
-DEBUG = False
+DEBUG = True
 
 expiration = 24 # expiration in hours (you see the splash page again after this many hours)
 splash_url = "http://127.0.0.1/splash.html"
@@ -14,18 +14,29 @@ splash_click_regex = "^http://click.splash.*"
 probe_regex_apple = "^http://www\.apple\.com/library/test/success\.html.*"
 splash_regex_apple = "^http://www.apple.com(/?)"
 
-probe_regex_android = "^http://clients3\.google\.com/generate_204\.html.*"
+probe_regex_android = "^http://clients3\.google\.com/generate_204*"
 splash_regex_android = "^http://clients3.google.com(/?)"
+
+probe_regex_win = "^http://www.msftncsi.com/ncsi.txt.*"
+splash_regex_win = "^http://www.msftncsi.com(/?)"
 
 conn = psycopg2.connect(host="127.0.0.1", database="captive", user="captive", password="?fakingthecaptive?")
 cur = conn.cursor()
 
 #clicked = False # TODO remove
 
+old_stdout = sys.stdout
+
+log_file = open("/var/log/squid3/message.log","a")
+
+sys.stdout = log_file
+
+
 def debug(s):
 
     if(DEBUG):
         print "DEBUG: " + s
+
 
 if len(sys.argv) > 1:
     if(sys.argv[1] == '-d'):
@@ -54,94 +65,148 @@ def register_click(ip):
     conn.commit()
     debug("Inserted ip: " + ip)
 
+debug("\n".join(sys.argv))
 
 while(True):
-    d = raw_input().split(' ')
-    url = d[0]
 
-    if(len(d) < 2):
-        print url # passthrough
-        continue
+    debug("loop once")
 
-    ip = d[1]
+    try:
+        rinput = raw_input()
+        debug("Input = " + rinput)
+        d = rinput.split(' ')
+        url = d[0]
 
-    if(re.match(probe_regex_apple, url)):
+        if(len(d) < 2):
+            print url # passthrough
+            continue
 
-        debug("apple probe from: " + ip)
+        ip = d[1]
 
-        if(did_user_already_click(ip)):
+        debug("ip = " + ip)
+        debug("url = " + url)
 
-            debug("user already clicked through. letting probe pass.")
+        if(re.match(probe_regex_apple, url)):
 
-            print url
+            debug("apple probe from: " + ip)
 
-        else:
+            if(did_user_already_click(ip)):
 
-            debug("blocking probe")
+                debug("user already clicked through. letting probe pass.")
+
+                print url
+
+            else:
+
+                debug("blocking probe")
+
+                print splash_url
+
+        elif(re.match(probe_regex_win, url)):
+
+            debug("windows probe from: " + ip)
+
+            if(did_user_already_click(ip)):
+
+                debug("user already clicked through. letting probe pass.")
+
+                print url
+
+            else:
+
+                debug("blocking probe")
+
+                print splash_url
+
+
+        elif(re.match(probe_regex_android, url)):
+
+            debug("android probe from: " + ip)
+
+            if(did_user_already_click(ip)):
+
+                debug("user already clicked through. letting probe pass.")
+
+                print url
+
+            else:
+
+                debug("blocking probe")
+
+                print splash_url
+
+
+        elif(re.match(splash_regex_apple, url)):
+
+            debug("apple splash page fetch from: " + ip)
+
+            if(did_user_already_click(ip)):
+
+                debug("user already clicked through. not showing splash page")
+
+                print url
+
+            else:
+
+                debug("showing splash page")
+
+                print splash_url
+
+        elif(re.match(splash_regex_win, url)):
+
+            debug("windows splash page fetch from: " + ip)
+
+            if(did_user_already_click(ip)):
+
+                debug("user already clicked through. not showing splash page")
+
+                print url
+
+            else:
+
+                debug("showing splash page")
+
+                print splash_url
+
+
+        elif(re.match(splash_regex_android, url)):
+
+            debug("android splash page fetch from: " + ip)
+
+            if(did_user_already_click(ip)):
+
+                debug("user already clicked through. not showing splash page")
+
+                print url
+
+            else:
+
+                debug("showing splash page")
+
+                print splash_url
+
+        elif(re.match(splash_click_regex, url)):
+
+            debug("splash page clicked by: " + ip)
+
+            register_click(ip);
 
             print splash_url
 
-    elif(re.match(probe_regex_android, url)):
-
-        debug("android probe from: " + ip)
-
-        if(did_user_already_click(ip)):
-
-            debug("user already clicked through. letting probe pass.")
+        else:
 
             print url
 
-        else:
-
-            debug("blocking probe")
-
-            print splash_url
-
-
-    elif(re.match(splash_regex_apple, url)):
-
-        debug("apple splash page fetch from: " + ip)
-
-        if(did_user_already_click(ip)):
-
-            debug("user already clicked through. not showing splash page")
-
-            print url
-
-        else:
-
-            debug("showing splash page")
-
-            print splash_url
-
-    elif(re.match(splash_regex_android, url)):
-
-        debug("android splash page fetch from: " + ip)
-
-        if(did_user_already_click(ip)):
-
-            debug("user already clicked through. not showing splash page")
-
-            print url
-
-        else:
-
-            debug("showing splash page")
-
-            print splash_url
-
-    elif(re.match(splash_click_regex, url)):
-
-        debug("splash page clicked by: " + ip)
-
-        register_click(ip);
-
-        print splash_url
+    except EOFError:
+        debug("End of File")
+        break
 
     else:
-
-        print url
+        debug("hitting try else")
 
 conn.close()
 
 
+sys.stdout = old_stdout
+
+log_file.close()
