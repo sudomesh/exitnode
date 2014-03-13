@@ -5,17 +5,20 @@ import re
 import sys
 from datetime import datetime, timedelta
 
-DEBUG = True
+DEBUG = False
 
 expiration = 24 # expiration in hours (you see the splash page again after this many hours)
 splash_url = "http://127.0.0.1/splash.html"
-splash_click_regex = "^http://click.splash.*"
+splash_click_regex = "splash_click\.html*"
 
-probe_regex_apple = "^http://www\.apple\.com/library/test/success\.html.*"
-splash_regex_apple = "^http://www.apple.com(/?)"
+probe_regex_apple = "^http://www\.apple\.com/library/test/success\.html*"
+splash_regex_apple = "^http://www\.apple\.com/library/test/splash_click\.html.*"
+success_redirect_apple = "http://www.apple.com/library/test/success.html"
+#splash_regex_apple = "^http://www\.apple\.com(/?)"
 
-probe_regex_android = "^http://clients3\.google\.com/generate_204*"
-splash_regex_android = "^http://clients3.google.com(/?)"
+probe_regex_android = "^http://74\.125\.224\.142/generate_204*"
+splash_regex_android = "^http://74\.125\.224\.142/splash_click.html*"
+success_redirect_android = "http://74.125.224.142/generate_204"
 
 probe_regex_win = "^http://www.msftncsi.com/ncsi.txt.*"
 splash_regex_win = "^http://www.msftncsi.com(/?)"
@@ -33,10 +36,10 @@ log_file = open("/var/log/squid3/message.log","a")
 def debug(s):
 
     if(DEBUG):
-        old_stdout = sys.stdout
-        sys.stdout = log_file
-        print "DEBUG: " + s
-        sys.stdout = old_stdout
+        print("DEBUG: " + s + "\n")
+    else:
+        log_file.write("DEBUG: " + s + "\n")
+        log_file.flush()
 
 
 if len(sys.argv) > 1:
@@ -47,16 +50,24 @@ if len(sys.argv) > 1:
 
 def did_user_already_click(ip):
 
+    debug("Trying sql query: ")
+    debug("SELECT ipv4, created FROM pass WHERE ipv4 = '"+ip+"';")
     cur.execute("SELECT ipv4, created FROM pass WHERE ipv4 = '"+ip+"';")
     row = cur.fetchone()
+    clicked = False
 
     if(row):
-        if (datetime.now() - row.timestamp) < timedelta (hours = 24):
-            return True
+        debug(str(row))
+        debug(str(row[1]))
+        timestamp = row[1]
+        debug(str(datetime.now()))
+        debug(str(timestamp))
+        if (datetime.now() - timestamp) < timedelta (hours = 24):
+            clicked = True
         else:
-            return False
+            clicked = False
     else:
-        return False
+        clicked = False
 
     return clicked
 
@@ -83,9 +94,19 @@ while(True):
             continue
 
         ip = d[1]
+        #ip = string.replace(ip, '-', '')
+        #ip = string.replace(ip, '/', '')
+
 
         debug("ip = " + ip)
         debug("url = " + url)
+
+        if(re.search(splash_click_regex, url)):
+
+            debug("splash page clicked by: " + ip)
+
+            register_click(ip);
+
 
         if(re.match(probe_regex_apple, url)):
 
@@ -140,12 +161,15 @@ while(True):
         elif(re.match(splash_regex_apple, url)):
 
             debug("apple splash page fetch from: " + ip)
+            debug("user already clicked?")
 
             if(did_user_already_click(ip)):
 
                 debug("user already clicked through. not showing splash page")
+                debug("redirecting to:")
+                debug(success_redirect_apple)
 
-                print url
+                print success_redirect_apple
 
             else:
 
@@ -178,21 +202,13 @@ while(True):
 
                 debug("user already clicked through. not showing splash page")
 
-                print url
+                print success_redirect_android
 
             else:
 
                 debug("showing splash page")
 
                 print splash_url
-
-        elif(re.match(splash_click_regex, url)):
-
-            debug("splash page clicked by: " + ip)
-
-            register_click(ip);
-
-            print splash_url
 
         else:
 
@@ -202,6 +218,9 @@ while(True):
     except EOFError:
         debug("End of File")
         break
+    except Exception:
+        debug("Unexpected error:")
+        debug(str(sys.exc_info()[0]))
 
 conn.close()
 
