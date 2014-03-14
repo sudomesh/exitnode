@@ -6,22 +6,18 @@ import sys
 from datetime import datetime, timedelta
 
 DEBUG = False
+success_redirect = "http://peoplesopen.net"
 
 expiration = 24 # expiration in hours (you see the splash page again after this many hours)
 splash_url = "http://127.0.0.1/splash.html"
-splash_click_regex = "splash_click\.html*"
+splash_click_regex = "splash_click\.html"
 
-probe_regex_apple = "^http://www\.apple\.com/library/test/success\.html*"
-splash_regex_apple = "^http://www\.apple\.com/library/test/splash_click\.html.*"
-success_redirect_apple = "http://www.apple.com/library/test/success.html"
+probe_regex_apple = "apple\.com/library/test/success\.html"
+splash_regex_apple = "apple.com"
 #splash_regex_apple = "^http://www\.apple\.com(/?)"
 
-probe_regex_android = "^http://74\.125\.224\.142/generate_204*"
-splash_regex_android = "^http://74\.125\.224\.142/splash_click.html*"
-success_redirect_android = "http://74.125.224.142/generate_204"
-
-probe_regex_win = "^http://www.msftncsi.com/ncsi.txt.*"
-splash_regex_win = "^http://www.msftncsi.com(/?)"
+probe_regex_android = "generate_204"
+splash_regex_android = "74.125.224.142"
 
 conn = psycopg2.connect(host="localhost", database="captive", user="captive", password="?fakingthecaptive?")
 cur = conn.cursor()
@@ -108,7 +104,7 @@ while(True):
             register_click(ip);
 
 
-        if(re.match(probe_regex_apple, url)):
+        if(re.search(probe_regex_apple, url)):
 
             debug("apple probe from: " + ip)
 
@@ -121,27 +117,12 @@ while(True):
             else:
 
                 debug("blocking probe")
-
-                print splash_url
-
-        elif(re.match(probe_regex_win, url)):
-
-            debug("windows probe from: " + ip)
-
-            if(did_user_already_click(ip)):
-
-                debug("user already clicked through. letting probe pass.")
-
-                print url
-
-            else:
-
-                debug("blocking probe")
+                debug("printing: " + splash_url)
 
                 print splash_url
 
 
-        elif(re.match(probe_regex_android, url)):
+        elif(re.search(probe_regex_android, url)):
 
             debug("android probe from: " + ip)
 
@@ -155,10 +136,11 @@ while(True):
 
                 debug("blocking probe")
 
+                debug("printing: " + splash_url)
                 print splash_url
 
 
-        elif(re.match(splash_regex_apple, url)):
+        elif(re.search(splash_regex_apple, url)):
 
             debug("apple splash page fetch from: " + ip)
             debug("user already clicked?")
@@ -167,34 +149,19 @@ while(True):
 
                 debug("user already clicked through. not showing splash page")
                 debug("redirecting to:")
-                debug(success_redirect_apple)
+                debug(success_redirect)
 
-                print success_redirect_apple
-
-            else:
-
-                debug("showing splash page")
-
-                print splash_url
-
-        elif(re.match(splash_regex_win, url)):
-
-            debug("windows splash page fetch from: " + ip)
-
-            if(did_user_already_click(ip)):
-
-                debug("user already clicked through. not showing splash page")
-
-                print url
+                print success_redirect
 
             else:
 
                 debug("showing splash page")
 
+                debug("printing: " + splash_url)
                 print splash_url
 
 
-        elif(re.match(splash_regex_android, url)):
+        elif(re.search(splash_regex_android, url)):
 
             debug("android splash page fetch from: " + ip)
 
@@ -202,12 +169,13 @@ while(True):
 
                 debug("user already clicked through. not showing splash page")
 
-                print success_redirect_android
+                print success_redirect
 
             else:
 
                 debug("showing splash page")
 
+                debug("printing: " + splash_url)
                 print splash_url
 
         else:
