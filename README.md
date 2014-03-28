@@ -42,18 +42,12 @@ Then:
 
 /etc/init.d/squid restart
 
+In order to start the captive portal:
 
-TODO:
+sudo /etc/init.d/captive_portal_redirect start
 
-Set up tunneling between exit nodes and relay nodes (probably l2tp).
+and to stop:
 
-Automatically update firewall rules based on DNS every n minutes.
+sudo /etc/init.d/captive_portal_redirect stop
 
-Automatically drop expired IPs from the captive portal faker sql table.
-
-Remove hardcoded values in rewrite.py
-
-Make the captive portal faker work with android and windows.
-
-Test captive portal faker on more devices.
 
