@@ -12,22 +12,33 @@ expiration = 24 # expiration in hours (you see the splash page again after this 
 splash_url = "http://127.0.0.1/splash.html"
 splash_click_regex = "splash_click\.html"
 
-probe_regex_apple = "apple\.com/library/test/success\.html"
-splash_regex_apple = "apple.com"
-#splash_regex_apple = "^http://www\.apple\.com(/?)"
-
-probe_regex_android = "generate_204"
-splash_regex_android = "74.125.224.142"
-
 conn = psycopg2.connect(host="localhost", database="captive", user="captive", password="?fakingthecaptive?")
 cur = conn.cursor()
 
-#clicked = False # TODO remove
-
-
 log_file = open("/var/log/squid3/message.log","a")
 
+android_ip="clients3.google.com"
 
+# Annoying step of having to specifically look up the android ip address
+with open("/etc/dnsmasq.conf") as search:
+    for line in search:
+        if "clients3.google.com" in line:
+            print "google in line"
+            match = re.search('[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+', line)
+            if match:
+                print "match"
+                android_ip = match.group(0)
+
+
+class Probe:
+    def __init__(self, name, splash_regex, probe_regex):
+        self.name = name
+        self.splash_regex = splash_regex
+        self.probe_regex = probe_regex
+
+
+probes = [Probe("apple", "apple.com", "/library/test/success\.html"),
+          Probe("android", "74.125.239.8", "generate_204")];
 
 def debug(s):
 
@@ -53,17 +64,15 @@ def did_user_already_click(ip):
     clicked = False
 
     if(row):
-        debug(str(row))
-        debug(str(row[1]))
         timestamp = row[1]
-        debug(str(datetime.now()))
-        debug(str(timestamp))
         if (datetime.now() - timestamp) < timedelta (hours = 24):
             clicked = True
         else:
             clicked = False
     else:
         clicked = False
+
+    debug("clicked = " + str(clicked))
 
     return clicked
 
@@ -74,10 +83,13 @@ def register_click(ip):
     debug("Inserted ip: " + ip)
 
 debug("\n".join(sys.argv))
+debug("android_ip = " + android_ip)
 
 while(True):
 
     debug("loop once")
+    redirecting = False
+    this_is_a_click = False
 
     try:
         rinput = raw_input()
@@ -90,98 +102,63 @@ while(True):
             continue
 
         ip = d[1]
-        #ip = string.replace(ip, '-', '')
-        #ip = string.replace(ip, '/', '')
-
 
         debug("ip = " + ip)
         debug("url = " + url)
 
         if(re.search(splash_click_regex, url)):
 
-            debug("splash page clicked by: " + ip)
+            debug(" splash page clicked by: " + ip)
 
             register_click(ip);
+            this_is_a_click = True
 
+        for probe in probes:
+            if(re.search(probe.probe_regex, url)):
 
-        if(re.search(probe_regex_apple, url)):
+                debug(probe.name + "probe from: " + ip)
 
-            debug("apple probe from: " + ip)
+                if(did_user_already_click(ip)):
 
-            if(did_user_already_click(ip)):
+                    debug("user already clicked through. letting probe pass.")
+                    debug("redirecting to:")
+                    if this_is_a_click:
+                        print success_redirect
+                        redirecting = True
+                    else:
+                        print url
 
-                debug("user already clicked through. letting probe pass.")
+                else:
 
-                print url
+                    debug("blocking probe")
+                    debug("printing: " + splash_url)
+                    redirecting = True
+                    print splash_url
 
-            else:
+            elif(re.search(probe.splash_regex, url)):
 
-                debug("blocking probe")
-                debug("printing: " + splash_url)
+                debug(probe.name + " splash page fetch from: " + ip)
+                debug("user already clicked?")
 
-                print splash_url
+                if(did_user_already_click(ip)):
 
+                    debug("user already clicked through. not showing splash page")
+                    debug("redirecting to:")
+                    if this_is_a_click:
+                        print success_redirect
+                        redirecting = True
+                    else:
+                        print url
 
-        elif(re.search(probe_regex_android, url)):
+                else:
 
-            debug("android probe from: " + ip)
+                    debug("showing splash page")
+                    debug("printing: " + splash_url)
+                    redirecting = True
+                    print splash_url
 
-            if(did_user_already_click(ip)):
-
-                debug("user already clicked through. letting probe pass.")
-
-                print url
-
-            else:
-
-                debug("blocking probe")
-
-                debug("printing: " + splash_url)
-                print splash_url
-
-
-        elif(re.search(splash_regex_apple, url)):
-
-            debug("apple splash page fetch from: " + ip)
-            debug("user already clicked?")
-
-            if(did_user_already_click(ip)):
-
-                debug("user already clicked through. not showing splash page")
-                debug("redirecting to:")
-                debug(success_redirect)
-
-                print success_redirect
-
-            else:
-
-                debug("showing splash page")
-
-                debug("printing: " + splash_url)
-                print splash_url
-
-
-        elif(re.search(splash_regex_android, url)):
-
-            debug("android splash page fetch from: " + ip)
-
-            if(did_user_already_click(ip)):
-
-                debug("user already clicked through. not showing splash page")
-
-                print success_redirect
-
-            else:
-
-                debug("showing splash page")
-
-                debug("printing: " + splash_url)
-                print splash_url
-
-        else:
-
+        if not redirecting:
             print url
-            debug("should've printed the url")
 
     except EOFError:
         debug("End of File")
