@@ -2,7 +2,7 @@
 
 case "$1" in
   start)
-        /etc/squid3/dnscheck.py
+        /etc/squid3/dnscheck.py -f
         line="5 * * * * /etc/squid3/dnscheck.py"
         (crontab -u root -l; echo "$line" ) | crontab -u root -
         ;;

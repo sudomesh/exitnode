@@ -16,6 +16,10 @@ class Host:
 hosts = [Host("apple", "apple.com"),
          Host("google", "clients3.google.com")]
 
+if len(sys.argv) > 1:
+    if(sys.argv[1] == '-f'):
+        FORCE = True
+
 
 # From http://stackoverflow.com/questions/39086/search-and-replace-a-line-in-a-file-in-python
 # and modified to replace whole line
@@ -44,16 +48,12 @@ for host in hosts:
 
 ip_list = [line.strip() for line in open('/etc/squid3/hosts')]
 
-#needs_updating = False
+needs_updating = False
 for host in hosts:
     if not host.ip in ip_list:
         needs_updating = True
 
-# For now I want to update the hosts file and
-# iptables every time this script runs
-needs_updating  = True 
-
-if needs_updating:
+if needs_updating or FORCE:
     rename('/etc/squid3/hosts', '/etc/squid3/hosts.old')
     f = open('/etc/squid3/hosts', 'w')
     for host in hosts:
@@ -63,5 +63,8 @@ if needs_updating:
     f.close()
     chmod('/etc/dnsmasq.conf', 0644)
     subprocess.call('/etc/squid3/iptables_config.sh')
+    subprocess.call(['/etc/init.d/squid3', 'restart')
+    subprocess.call(['/etc/init.d/dnsmasq', 'restart')
+
 
 
