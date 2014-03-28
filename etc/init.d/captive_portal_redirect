@@ -1,20 +1,25 @@
 #!/bin/sh
 
-# Captive portal redirect for ios and android devices
+case "$1" in
+  start)
+        /etc/squid3/dnscheck.py
+        line="5 * * * * /etc/squid3/dnscheck.py"
+        (crontab -u root -l; echo "$line" ) | crontab -u root -
+        ;;
+  stop)
+        /etc/squid3/iptables_clear.sh
 
-# TODO: We need a script that changes this rule every time the caching dns server updates the entry for e.g. www.apple.com
-# TODO: We need redirect rules for windows and android devices as well.
+        CRON_TEMP="/tmp/crontmp"
+        CRON_NEW="/tmp/cronnew"
 
-hostlines=()
-host_file="/etc/squid3/hosts"
-while read -r line
-do
-  hostlines=("${hostlines[@]}" "${line}")
-done < "$host_file"
-
-for host in "${hostlines[@]}"; do
-  # Redirects requests to the IPs in the hosts file to a local squid server
-  iptables -t nat -A PREROUTING -i bat0 -p tcp -d ${host} --dport 80 -j REDIRECT --to-port 3128
-done
+        crontab -l >$CRON_TEMP
+        awk '$0!~/dnscheck.py/ { print $0 }' $CRON_TEMP >$CRON_NEW
+        crontab $CRON_NEW
+        ;;
+  *)
+        echo "Usage: $0 start|stop" >&2
+        exit 3
+        ;;
+esac
 
 

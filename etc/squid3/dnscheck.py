@@ -44,10 +44,14 @@ for host in hosts:
 
 ip_list = [line.strip() for line in open('/etc/squid3/hosts')]
 
-needs_updating = False
+#needs_updating = False
 for host in hosts:
     if not host.ip in ip_list:
         needs_updating = True
+
+# For now I want to update the hosts file and
+# iptables every time this script runs
+needs_updating  = True 
 
 if needs_updating:
     rename('/etc/squid3/hosts', '/etc/squid3/hosts.old')
