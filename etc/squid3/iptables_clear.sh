@@ -17,6 +17,8 @@ for ip in "${old_hostlines[@]}"; do
     iptables -t nat -D PREROUTING -i bat0 -p tcp -d ${ip} --dport 80 -j REDIRECT --to-port 3128
 done
 
+echo "" > ${old_host_file}
+
 
 # Now clear new-ish squid redirect iptables rules
 while read -r new_line
@@ -27,3 +29,5 @@ done < "$host_file"
 for new_ip in "${hostlines[@]}"; do
     iptables -t nat -D PREROUTING -i bat0 -p tcp -d ${new_ip} --dport 80 -j REDIRECT --to-port 3128
 done
+
+echo "" > ${host_file}

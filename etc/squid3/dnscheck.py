@@ -1,6 +1,7 @@
 #!/usr/bin/env python2.7
 
 import socket
+import sys
 from os import path, remove, close, chmod, rename
 import subprocess
 import re
@@ -14,6 +15,12 @@ class Host:
         self.url = url
 
 hosts = [Host("apple", "apple.com"),
+         Host("apple2", "captive.apple.com"),
+         Host("apple3", "www.ibook.info"),
+         Host("apple4", "www.itools.info"),
+         Host("apple5", "www.airport.us"),
+         Host("apple6", "www.thinkdifferent.us"),
+         Host("apple7", "www.appleiphonecell.com"),
          Host("google", "clients3.google.com")]
 
 if len(sys.argv) > 1:
@@ -59,12 +66,11 @@ if needs_updating or FORCE:
     for host in hosts:
         f.write(host.ip + '\n')
         dns_string = 'address=/' + host.url + '/' + host.ip
-        replace('/etc/dnsmasq.conf', host.url, dns_string) 
+        replace('/etc/dnsmasq.conf', 'address=/' + host.url, dns_string) 
     f.close()
     chmod('/etc/dnsmasq.conf', 0644)
     subprocess.call('/etc/squid3/iptables_config.sh')
-    subprocess.call(['/etc/init.d/squid3', 'restart')
-    subprocess.call(['/etc/init.d/dnsmasq', 'restart')
+    subprocess.call(['/etc/init.d/dnsmasq', 'restart'])
 
 
 
