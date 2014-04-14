@@ -1,4 +1,5 @@
 #!/usr/bin/env python2.7
+# -*- coding: utf-8 -*-
 
 import psycopg2
 import re
@@ -11,6 +12,8 @@ success_redirect = "http://peoplesopen.net"
 expiration = 24 # expiration in hours (you see the splash page again after this many hours)
 splash_url = "http://127.0.0.1/splash.html"
 splash_click_regex = "splash_click\.html"
+
+url_regex = re.compile(r'^[a-zA-Z\d-]{,63}(\.[a-zA-Z\d-]{,63})*$')
 
 conn = psycopg2.connect(host="localhost", database="captive", user="captive", password="?fakingthecaptive?")
 cur = conn.cursor()
@@ -38,7 +41,7 @@ class Probe:
 
 probes = [Probe("apple", ["apple.com", "/library/test/success\.html", "captive.apple.com", "www.ibook.info", "www.itools.info", "www.airport.us", "www.thinkdifferent.us", "www.appleiphonecell.com"]),
           Probe("android", ["74.125.239.8", "generate_204"])];
- 
+
 def debug(s):
 
     if(DEBUG):
@@ -94,13 +97,16 @@ while(True):
         debug("Input = " + rinput)
         d = rinput.split(' ')
         url = d[0]
-        #TODO: Whitelist url and ip from squid!!
+        url_match = re.match(url_regex, d[0])
+        url = url_match.group(0)
+
 
         if(len(d) < 2):
             print url # passthrough
             continue
 
-        ip = d[1]
+        ip_match = re.match('[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+', d[1])
+        ip = ip_match.group(0)
 
         debug("ip = " + ip)
         debug("url = " + url)
