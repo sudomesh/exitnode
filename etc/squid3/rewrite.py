@@ -31,15 +31,14 @@ with open("/etc/dnsmasq.conf") as search:
 
 
 class Probe:
-    def __init__(self, name, splash_regex, probe_regex):
+    def __init__(self, name, probe_regexes):
         self.name = name
-        self.splash_regex = splash_regex
-        self.probe_regex = probe_regex
+        self.probe_regexes = probe_regexes
 
 
-probes = [Probe("apple", "apple.com", "/library/test/success\.html"),
-          Probe("android", "74.125.239.8", "generate_204")];
-
+probes = [Probe("apple", ["apple.com", "/library/test/success\.html", "captive.apple.com", "www.ibook.info", "www.itools.info", "www.airport.us", "www.thinkdifferent.us", "www.appleiphonecell.com"]),
+          Probe("android", ["74.125.239.8", "generate_204"])];
+ 
 def debug(s):
 
     if(DEBUG):
@@ -89,13 +88,13 @@ while(True):
 
     debug("loop once")
     redirecting = False
-    this_is_a_click = False
 
     try:
         rinput = raw_input()
         debug("Input = " + rinput)
         d = rinput.split(' ')
         url = d[0]
+        #TODO: Whitelist url and ip from squid!!
 
         if(len(d) < 2):
             print url # passthrough
@@ -111,51 +110,31 @@ while(True):
             debug(" splash page clicked by: " + ip)
 
             register_click(ip);
-            this_is_a_click = True
+            print success_redirect
+            redirecting = True
 
-        for probe in probes:
-            if(re.search(probe.probe_regex, url)):
+        if not redirecting:
 
-                debug(probe.name + "probe from: " + ip)
+            for probe in probes:
 
-                if(did_user_already_click(ip)):
+                for regex in probe.probe_regexes:
 
-                    debug("user already clicked through. letting probe pass.")
-                    debug("redirecting to:")
-                    if this_is_a_click:
-                        print success_redirect
-                        redirecting = True
-                    else:
-                        print url
+                    if(re.search(regex, url) and not redirecting):
 
-                else:
+                        debug(probe.name + "probe for " + regex + " from: " + ip)
 
-                    debug("blocking probe")
-                    debug("printing: " + splash_url)
-                    redirecting = True
-                    print splash_url
+                        if(did_user_already_click(ip)):
 
-            elif(re.search(probe.splash_regex, url)):
+                            debug("user already clicked through. letting probe pass.")
+                            debug("redirecting to:")
+                            debug(url)
 
-                debug(probe.name + " splash page fetch from: " + ip)
-                debug("user already clicked?")
+                        else:
 
-                if(did_user_already_click(ip)):
-
-                    debug("user already clicked through. not showing splash page")
-                    debug("redirecting to:")
-                    if this_is_a_click:
-                        print success_redirect
-                        redirecting = True
-                    else:
-                        print url
-
-                else:
-
-                    debug("showing splash page")
-                    debug("printing: " + splash_url)
-                    redirecting = True
-                    print splash_url
+                            debug("blocking probe")
+                            debug("printing: " + splash_url)
+                            redirecting = True
+                            print splash_url
 
         if not redirecting:
             print url
