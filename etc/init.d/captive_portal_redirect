@@ -3,11 +3,11 @@
 case "$1" in
   start)
         /etc/squid3/dnscheck.py -f
-        line="5 * * * * /etc/squid3/dnscheck.py"
+        line="10 * * * * /etc/squid3/dnscheck.py"
         (crontab -u root -l; echo "$line" ) | crontab -u root -
+        /etc/init.d/squid3 start
         ;;
   stop)
-        /etc/squid3/iptables_clear.sh
 
         CRON_TEMP="/tmp/crontmp"
         CRON_NEW="/tmp/cronnew"
@@ -15,6 +15,8 @@ case "$1" in
         crontab -l >$CRON_TEMP
         awk '$0!~/dnscheck.py/ { print $0 }' $CRON_TEMP >$CRON_NEW
         crontab $CRON_NEW
+        /etc/init.d/squid3 stop
+        python /etc/squid3/iptables_config.py -d
         ;;
   *)
         echo "Usage: $0 start|stop" >&2

@@ -8,6 +8,7 @@ import re
 import stat
 from tempfile import mkstemp
 from shutil import move
+import iptables_config
 
 class Host:
     def __init__(self, name, url):
@@ -50,27 +51,30 @@ def replace(file_path, pattern, subst):
     move(abs_path, file_path)
 
 
-for host in hosts:
-    host.ip = socket.gethostbyname(host.url)
-
-ip_list = [line.strip() for line in open('/etc/squid3/hosts')]
-
-needs_updating = False
-for host in hosts:
-    if not host.ip in ip_list:
-        needs_updating = True
-
-if needs_updating or FORCE:
-    rename('/etc/squid3/hosts', '/etc/squid3/hosts.old')
-    f = open('/etc/squid3/hosts', 'w')
+def main():
     for host in hosts:
-        f.write(host.ip + '\n')
-        dns_string = 'address=/' + host.url + '/' + host.ip
-        replace('/etc/dnsmasq.conf', 'address=/' + host.url, dns_string) 
-    f.close()
-    chmod('/etc/dnsmasq.conf', 0644)
-    subprocess.call('/etc/squid3/iptables_config.sh')
-    subprocess.call(['/etc/init.d/dnsmasq', 'restart'])
+        host.ip = socket.gethostbyname(host.url)
+
+    ip_list = [line.strip() for line in open('/etc/squid3/hosts')]
+
+    needs_updating = False
+    for host in hosts:
+        if not host.ip in ip_list:
+            needs_updating = True
+
+    if needs_updating or FORCE:
+        rename('/etc/squid3/hosts', '/etc/squid3/hosts.old')
+        f = open('/etc/squid3/hosts', 'w')
+        for host in hosts:
+            f.write(host.ip + '\n')
+            dns_string = 'address=/' + host.url + '/' + host.ip
+            replace('/etc/dnsmasq.conf', 'address=/' + host.url, dns_string) 
+        f.close()
+        chmod('/etc/dnsmasq.conf', 0644)
+        iptables_config.add_rules()
+        subprocess.call(['/etc/init.d/dnsmasq', 'restart'])
 
 
 
+if __name__ == "__main__":
+    main()

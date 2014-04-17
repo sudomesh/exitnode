@@ -13,7 +13,7 @@ expiration = 24 # expiration in hours (you see the splash page again after this 
 splash_url = "http://127.0.0.1/splash.html"
 splash_click_regex = "splash_click\.html"
 
-url_regex = re.compile(r'^[a-zA-Z\d-]{,63}(\.[a-zA-Z\d-]{,63})*$')
+url_regex = re.compile(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
 
 conn = psycopg2.connect(host="localhost", database="captive", user="captive", password="?fakingthecaptive?")
 cur = conn.cursor()
@@ -96,17 +96,27 @@ while(True):
         rinput = raw_input()
         debug("Input = " + rinput)
         d = rinput.split(' ')
+        
         url = d[0]
-        url_match = re.match(url_regex, d[0])
-        url = url_match.group(0)
-
-
         if(len(d) < 2):
             print url # passthrough
             continue
 
+        url_match = re.findall(url_regex, d[0])
+
+        if (len(url_match) == 0):
+            print url
+            continue
+
+        url = url_match[0]
+
         ip_match = re.match('[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+', d[1])
-        ip = ip_match.group(0)
+
+        try:
+            ip = ip_match.group(0)
+        except AttributeError: # in case no ip is recognized
+            print url
+            continue
 
         debug("ip = " + ip)
         debug("url = " + url)
