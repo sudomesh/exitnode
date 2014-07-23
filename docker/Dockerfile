@@ -37,7 +37,7 @@ ADD src/var /var
 
 WORKDIR /opt
 RUN git clone https://github.com/sudomesh/tunneldigger.git
-RUN cp /opt/broker/scripts/tunneldigger-broker.init.d /etc/init.d
+RUN cp /opt/tunneldigger/broker/scripts/tunneldigger-broker.init.d /etc/init.d
 
 RUN echo "host captive captive 127.0.0.1/32 md5" >> /etc/postgresql/9.1/main/pg_hba.conf 
 
