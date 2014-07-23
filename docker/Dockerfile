@@ -35,8 +35,6 @@ RUN apt-get update && apt-get install -y --force-yes \
 ADD src/etc /etc
 ADD src/var /var
 
-RUN mkdir /opt
-
 WORKDIR /opt
 RUN git clone https://github.com/sudomesh/tunneldigger.git
 RUN cp /opt/broker/scripts/tunneldigger-broker.init.d /etc/init.d
