@@ -28,7 +28,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.provision "docker" do |d|
     d.build_image "/vagrant/docker", args:"-t maxb/exit1"
-    d.run "maxb/exit1", args:"-p 8080:80 -p 2020:22 -t -i"
+    d.run "maxb/exit1", args:"-p 8080:80 -p 2020:22 -d"
   end
 
   # Create a private network, which allows host-only access to the machine

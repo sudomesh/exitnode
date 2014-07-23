@@ -10,6 +10,7 @@ RUN apt-get update && apt-get install -y --force-yes \
 		build-essential \
     ca-certificates \
     curl \
+    git \
 		libssl-dev \
 		libxslt1-dev \
     module-init-tools \
@@ -26,8 +27,18 @@ RUN apt-get update && apt-get install -y --force-yes \
     python-psycopg2 \
     python-software-properties \
     software-properties-common \
+    linux-headers* \
     python \
     vim
+
+# All exitnode file configs
+ADD src/etc /etc
+ADD src/var /var
+
+RUN mkdir /opt
+
+WORKDIR /opt
+RUN git clone https://github.com/sudomesh/tunneldigger.git
 
 RUN echo "host captive captive 127.0.0.1/32 md5" >> /etc/postgresql/9.1/main/pg_hba.conf 
 
@@ -55,11 +66,13 @@ RUN . /root/.profile; \
 
 
 # ssh stuffs
+# @@TODO: BETTER PASSWORD/Public Key
 RUN echo 'root:sudoer' | chpasswd
 
 # nginx stuffs
 ADD nginx.conf /etc/nginx/nginx.conf
 RUN mkdir /data; mkdir /data/www;
+
 EXPOSE 80
 EXPOSE 22 
 
