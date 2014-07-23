@@ -27,7 +27,6 @@ RUN apt-get update && apt-get install -y --force-yes \
     python-psycopg2 \
     python-software-properties \
     software-properties-common \
-    linux-image-amd64 \
     python \
     vim
 
@@ -44,6 +43,10 @@ RUN echo "host captive captive 127.0.0.1/32 md5" >> /etc/postgresql/9.1/main/pg_
 ADD setupcaptive.sql /home/
 
 WORKDIR /home
+
+git clone http://git.open-mesh.org/batman-adv.git batman-adv
+WORKDIR /home/batman-adv
+RUN make && make install
 
 RUN /etc/init.d/postgresql restart; su postgres -c "ls -la";su postgres -c "pwd"; su postgres -c "psql -f setupcaptive.sql -d postgres"
 
