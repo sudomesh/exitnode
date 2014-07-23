@@ -27,7 +27,7 @@ RUN apt-get update && apt-get install -y --force-yes \
     python-psycopg2 \
     python-software-properties \
     software-properties-common \
-    linux-headers* \
+    linux-image-amd64 \
     python \
     vim
 
