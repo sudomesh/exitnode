@@ -50,6 +50,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     python-software-properties \
     software-properties-common \
     python \
+    python-dev \
     python-pip \
     vim \
     tmux
