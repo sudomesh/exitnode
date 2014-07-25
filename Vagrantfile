@@ -68,9 +68,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   git clone https://github.com/sudomesh/tunneldigger.git /opt/tunneldigger
   cd /opt/tunneldigger/broker
   virtualenv env_tunneldigger
-  source env_tunneldigger/bin/activate
-  pip install -r requirements.txt
-  deactivate
+  /opt/tunneldigger/broker/bin/pip install -r requirements.txt
   # virtualenv venv
   # source /opt/tunneldigger/broker/venv/bin/activate
   # pip install -r requirements.txt
