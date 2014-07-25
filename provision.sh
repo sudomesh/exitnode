@@ -78,7 +78,7 @@ rm -rf /opt/tunneldigger # ONLY NECESSARY IF WE WANT TO CLEAN UP LAST TUNNELDIGG
 git clone https://github.com/sudomesh/tunneldigger.git /opt/tunneldigger
 cd /opt/tunneldigger/broker
 virtualenv env_tunneldigger
-/opt/tunneldigger/broker/bin/pip install -r requirements.txt
+/opt/tunneldigger/broker/env_tunneldigger/bin/pip install -r requirements.txt
 
 #
 # cp /opt/tunneldigger/broker/scripts/tunneldigger-broker.init.d /etc/init.d @@TODO: Understand the difference between the two init scripts!
