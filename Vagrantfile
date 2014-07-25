@@ -8,6 +8,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # All Vagrant configuration is done here. The most common configuration
   # options are documented and commented below. For a complete reference,
   # please see the online documentation at vagrantup.com.
+  #
+  # @@TODO: Add libnl-dev in order to compile tunneldigger client
 
   # Every Vagrant virtual environment requires a box to build off of.
   config.vm.box = "chef/debian-7.4"
@@ -23,13 +25,107 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.network "forwarded_port", guest: 8080, host: 8081
   config.vm.network "forwarded_port", guest: 2020, host: 2020
 
+  $script = <<SCRIPT
+  echo "provisioning"
+  apt-get update && apt-get install -y --force-yes \
+    nginx \
+		build-essential \
+    ca-certificates \
+    curl \
+    git \
+		libssl-dev \
+		libxslt1-dev \
+    module-init-tools \
+    batctl \
+    bridge-utils \
+		openssh-server \
+    openssl \
+		perl \
+		dnsmasq \
+		squid3 \
+    postgresql \
+    procps \
+    procps \
+    python-psycopg2 \
+    python-software-properties \
+    software-properties-common \
+    python \
+    vim \
+    tmux
+
+# Totally uneccessary fancy vim config
+  git clone git://github.com/maxb/vimrc.git /root/.vim_runtime
+  sh /root/.vim_runtime/install_awesome_vimrc.sh
+
+# All exitnode file configs
+  cp -r /vagrant/src/etc/* /etc/
+  cp -r /vagrant/src/var/* /var/
+
+  rm -rf /opt/tunneldigger # ONLY NECESSARY IF WE WANT TO CLEAN UP LAST TUNNELDIGGER INSTALL
+  git clone https://github.com/sudomesh/tunneldigger.git /opt/tunneldigger
+  cd /opt/tunneldigger/broker
+  virtualenv env_tunneldigger
+  source env_tunneldigger/bin/activate
+  pip install -r requirements.txt
+  deactivate
+  # virtualenv venv
+  # source /opt/tunneldigger/broker/venv/bin/activate
+  # pip install -r requirements.txt
+  #
+  # cp /opt/tunneldigger/broker/scripts/tunneldigger-broker.init.d /etc/init.d @@TODO: Understand the difference between the two init scripts!
+  cp /opt/tunneldigger/broker/scripts/tunneldigger-broker.init.d /etc/init.d/tunneldigger
+
+  echo "host captive captive 127.0.0.1/32 md5" >> /etc/postgresql/9.1/main/pg_hba.conf 
+
+
+  # git clone http://git.open-mesh.org/batman-adv.git /home/batman-adv
+  # cd /home/batman-adv
+  # make && make install
+  #
+  modprobe batman-adv
+
+  cp /vagrant/setupcaptive.sql /home/
+  cd /home
+  /etc/init.d/postgresql restart; su postgres -c "ls -la";su postgres -c "pwd"; su postgres -c "psql -f setupcaptive.sql -d postgres"
+
+# Squid + redirect stuff for captive portal
+# /etc/init.d/squid restart
+# /etc/init.d/captive_portal_redirect start
+
+# node stuffs
+  cp /vagrant/.profile /root/.profile
+  mkdir /root/nvm
+  cd /root/nvm
+  touch /root/.profile
+  usermod -d /root -m root
+  curl https://raw.githubusercontent.com/creationix/nvm/v0.10.0/install.sh | bash
+  cat /root/.profile
+  . /root/.profile; \
+      nvm install 0.10; \
+      nvm use 0.10;
+
+
+# ssh stuffs
+# @@TODO: BETTER PASSWORD/Public Key
+  echo 'root:sudoer' | chpasswd
+
+  alias ls="ls -la"
+
+# nginx stuffs
+  cp /vagrant/nginx.conf /etc/nginx/nginx.conf
+
+SCRIPT
+
+  config.vm.provision "shell", inline: $script
+    
+
   # config.vm.provision "docker" do |d|
   # end
 
-  config.vm.provision "docker" do |d|
-    d.build_image "/vagrant/docker", args:"-t maxb/exit1"
-    d.run "maxb/exit1", args:"-p 8080:80 -p 2020:22 -d"
-  end
+#   config.vm.provision "docker" do |d|
+#     d.build_image "/vagrant/docker", args:"-t maxb/exit1"
+#     d.run "maxb/exit1", args:"-p 8080:80 -p 2020:22 -d"
+#   end
 
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
