@@ -1,5 +1,9 @@
 #!/bin/sh
 
+PUBLIC_IP=123.1.1.1 
+MESH_IP=10.0.33.1
+MESH_MTU=1400
+
 if [ "$#" -le 0 ]
 then
   SRC_DIR="/vagrant/"
@@ -52,6 +56,21 @@ sh /root/.vim_runtime/install_awesome_vimrc.sh
 # All exitnode file configs
 cp -r $SRC_DIR/src/etc/* /etc/
 cp -r $SRC_DIR/src/var/* /var/
+
+# Check if bat0 already has configs
+if grep -Fxq "bat0" /etc/network/interfaces
+then
+  echo "bat0 already configured in /etc/network/interfaces"
+else
+  echo $'iface bat0 inet static\n  address $MESH_IP\n  netmask 255.0.0.0\n  mtu 1400' >> /etc/network/interfaces
+fi
+
+# Setup public ip in tunneldigger.cfg
+
+CFG="/opt/tunneldigger/broker/l2tp_broker.cfg"
+CFG_TMP="/tmp/tun_cfg_new"
+sed "s/address=[0-9+].[0-9+].[0-9+].[0-9+]/address=$PUBLIC_IP/" $CFG >$CFG_TMP
+cp $CFG_TMP $CFG
 
 pip install virtualenv
 
