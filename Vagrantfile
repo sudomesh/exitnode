@@ -50,6 +50,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     python-software-properties \
     software-properties-common \
     python \
+    python-pip \
     vim \
     tmux
 
@@ -60,6 +61,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 # All exitnode file configs
   cp -r /vagrant/src/etc/* /etc/
   cp -r /vagrant/src/var/* /var/
+
+  pip install virtualenv
 
   rm -rf /opt/tunneldigger # ONLY NECESSARY IF WE WANT TO CLEAN UP LAST TUNNELDIGGER INSTALL
   git clone https://github.com/sudomesh/tunneldigger.git /opt/tunneldigger
