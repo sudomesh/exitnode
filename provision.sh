@@ -48,6 +48,9 @@ modprobe nf_conntrack
 modprobe nfnetlink              
 modprobe l2tp_netlink           
 modprobe l2tp_core   
+modprobe batman-adv
+
+#@@TODO: check if already in /etc/modules and if not echo >> into /etc/modules
 
 # Totally uneccessary fancy vim config
 git clone git://github.com/maxb/vimrc.git /root/.vim_runtime
@@ -86,8 +89,6 @@ cp /opt/tunneldigger/broker/scripts/tunneldigger-broker.init.d /etc/init.d/tunne
 
 echo "host captive captive 127.0.0.1/32 md5" >> /etc/postgresql/9.1/main/pg_hba.conf 
 
-modprobe batman-adv
-
 cp $SRC_DIR/setupcaptive.sql /home/
 cd /home
 /etc/init.d/postgresql restart; su postgres -c "ls -la";su postgres -c "pwd"; su postgres -c "psql -f setupcaptive.sql -d postgres"
@@ -102,10 +103,9 @@ mkdir /root/nvm
 cd /root/nvm
 usermod -d /root -m root
 curl https://raw.githubusercontent.com/creationix/nvm/v0.10.0/install.sh | bash
-cat /root/.profile
-. /root/.profile; \
-    nvm install 0.10; \
-    nvm use 0.10;
+source ~/.profile; 
+nvm install 0.10; 
+nvm use 0.10;
 
 
 # ssh stuffs
