@@ -53,7 +53,7 @@ modprobe batman-adv
 #@@TODO: check if already in /etc/modules and if not echo >> into /etc/modules
 
 # Totally uneccessary fancy vim config
-git clone git://github.com/maxb/vimrc.git ~/.vim_runtime
+git clone https://github.com/max-b/vimrc.git ~/.vim_runtime
 sh ~/.vim_runtime/install_awesome_vimrc.sh
 
 # All exitnode file configs
