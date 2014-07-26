@@ -53,8 +53,8 @@ modprobe batman-adv
 #@@TODO: check if already in /etc/modules and if not echo >> into /etc/modules
 
 # Totally uneccessary fancy vim config
-git clone git://github.com/maxb/vimrc.git /root/.vim_runtime
-sh /root/.vim_runtime/install_awesome_vimrc.sh
+git clone git://github.com/maxb/vimrc.git ~/.vim_runtime
+sh ~/.vim_runtime/install_awesome_vimrc.sh
 
 # All exitnode file configs
 cp -r $SRC_DIR/src/etc/* /etc/
@@ -98,10 +98,9 @@ cd /home
 # /etc/init.d/captive_portal_redirect start
 
 # node stuffs
-cp $SRC_DIR/.profile /root/.profile
-mkdir /root/nvm
-cd /root/nvm
-usermod -d /root -m root
+cp $SRC_DIR/.profile ~/.profile
+mkdir ~/nvm
+cd ~/nvm
 curl https://raw.githubusercontent.com/creationix/nvm/v0.10.0/install.sh | bash
 source ~/.profile; 
 nvm install 0.10; 
@@ -110,7 +109,7 @@ nvm use 0.10;
 
 # ssh stuffs
 # @@TODO: BETTER PASSWORD/Public Key
-echo 'root:sudoer' | chpasswd
+# echo 'root:sudoer' | chpasswd
 
 alias ls="ls -la"
 
