@@ -1,8 +1,9 @@
 #!/bin/sh
 
-PUBLIC_IP=123.1.1.1 
-MESH_IP=10.0.33.1
+MESH_IP=10.42.0.99
 MESH_MTU=1400
+ETH_IF=eth0
+PUBLIC_IP="$(ifconfig | grep -A 1 "$ETH_IF" | tail -1 | cut -d ':' -f 2 | cut -d ' ' -f 1)" 
 
 if [ "$#" -le 0 ]
 then
@@ -70,9 +71,12 @@ fi
 
 # Setup public ip in tunneldigger.cfg
 
+# Sorry this is so ugly - I'm not a very good bash programmer - maxb
 CFG="/opt/tunneldigger/broker/l2tp_broker.cfg"
 CFG_TMP="/tmp/tun_cfg_new"
 sed "s/address=[0-9+].[0-9+].[0-9+].[0-9+]/address=$PUBLIC_IP/" $CFG >$CFG_TMP
+cp $CFG_TMP $CFG
+sed "s/interface=lo/interface=$ETH_IF/" $CFG >$CFG_TMP
 cp $CFG_TMP $CFG
 
 pip install virtualenv
