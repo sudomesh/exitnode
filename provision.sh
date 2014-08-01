@@ -44,13 +44,19 @@ apt-get update && apt-get install -y --force-yes \
   vim \
   tmux
 
-modprobe nf_conntrack_netlink
-modprobe nf_conntrack           
-modprobe nfnetlink              
-modprobe l2tp_netlink           
-modprobe l2tp_core   
-modprobe l2tp_eth
-modprobe batman-adv
+REQUIRED_MODULES="nf_conntrack_netlink nf_conntrack nfnetlink l2tp_netlink l2tp_core l2tp_eth batman-adv"
+
+for module in $REQUIRED_MODULES
+do
+  if grep -q "$module" /etc/modules
+  then
+    echo "$module already in /etc/modules"
+  else
+    echo "\n$module" >> /etc/modules
+  fi
+done
+
+ 
 
 #@@TODO: check if already in /etc/modules and if not echo >> into /etc/modules
 
