@@ -49,6 +49,7 @@ modprobe nf_conntrack
 modprobe nfnetlink              
 modprobe l2tp_netlink           
 modprobe l2tp_core   
+modprobe l2tp_eth
 modprobe batman-adv
 
 #@@TODO: check if already in /etc/modules and if not echo >> into /etc/modules
