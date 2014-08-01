@@ -63,11 +63,11 @@ cp -r $SRC_DIR/src/etc/* /etc/
 cp -r $SRC_DIR/src/var/* /var/
 
 # Check if bat0 already has configs
-if grep -Fxq "bat0" /etc/network/interfaces
+if grep -q "bat0" /etc/network/interfaces
 then
   echo "bat0 already configured in /etc/network/interfaces"
 else
-  echo $'iface bat0 inet static\n  address $MESH_IP\n  netmask 255.0.0.0\n  mtu $MESH_MTU' >> /etc/network/interfaces
+  echo "iface bat0 inet static\n  address $MESH_IP\n  netmask 255.0.0.0\n  mtu $MESH_MTU" >> /etc/network/interfaces
 fi
 
 # Setup public ip in tunneldigger.cfg
