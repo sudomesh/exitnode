@@ -54,6 +54,7 @@ do
   else
     echo "\n$module" >> /etc/modules
   fi
+  modprobe $module
 done
 
  
@@ -81,7 +82,7 @@ fi
 # Sorry this is so ugly - I'm not a very good bash programmer - maxb
 CFG="/opt/tunneldigger/broker/l2tp_broker.cfg"
 CFG_TMP="/tmp/tun_cfg_new"
-sed "s/address=[0-9+]\.[0-9+]\.[0-9+]\.[0-9+]/address=$PUBLIC_IP/" $CFG >$CFG_TMP
+sed "s/address=[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+/address=$PUBLIC_IP/" $CFG >$CFG_TMP
 cp $CFG_TMP $CFG
 sed "s/interface=lo/interface=$ETH_IF/" $CFG >$CFG_TMP
 cp $CFG_TMP $CFG
