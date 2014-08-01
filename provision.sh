@@ -44,7 +44,7 @@ apt-get update && apt-get install -y --force-yes \
   vim \
   tmux
 
-REQUIRED_MODULES="nf_conntrack_netlink nf_conntrack nfnetlink l2tp_netlink l2tp_core l2tp_eth batman-adv"
+REQUIRED_MODULES="nf_conntrack_netlink nf_conntrack nfnetlink l2tp_netlink l2tp_core l2tp_eth batman_adv"
 
 for module in $REQUIRED_MODULES
 do
