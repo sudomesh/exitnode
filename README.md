@@ -1,53 +1,25 @@
 exitnode
 ========
 
-Configuration, script and instructions for exit nodes.
+# Intro #
 
-This is very much a work in progress.
+Our exit node is currently a single relay and exit server. All of the public traffic on peoplesopen.net access points is routed over an l2tp tunnel with tunneldigger through our exit server.
+In this way, creating a new exit server would essentially create a new "mesh". For the time being, all sudomesh/peoplesopen.net traffic must travel over a single exit server in order to remain on the same network.
 
-Required packages so far: 
+The l2tp kernel module is currently not compiled into Ubuntu, so we're using Debian.
 
-  dnsmasq
-  squid3
-  apache2 (though any webserver should do)
-  postgresql (though any sql server should do)
-  python2.7
-  python-psycopg2
-  
-Assumed distro is debian.
+We've set up a basic provisioning script, which is VERY MUCH A WORK IN PROGRESS, but should eventually take care of all of the steps required to set up and configure a new exit server.
 
-= Setup instructions =
+# Installation #
+On a debian distro, all you should need is git.
 
-To /etc/postgresql/9.1/main/pg_hba.conf add this line:
+In a home dir:
+`git clone `
+cd exitnode
 
-  host    captive         captive         127.0.0.1/32            md5
+Then take a look at the provision.sh script. The first few lines are configs in order to set up the public IP of the exit server and the mesh IP. 
 
-Then:
+After editing these variables, you can run `./provision.sh <ARGUMENT1>` where ARGUMENT1 is the location of the exitnode repo folder.
 
-/etc/init.d/postgresql restart
-
-Then:
-
-su postgres
-psql
-create user captive with password '?fakingthecaptive?';
-create database captive;
-\connect captive
-create table pass (id SERIAL, ipv4 varchar(16), ipv6 varchar(40), created timestamp DEFAULT current_timestamp);
-grant all privileges on database captive to captive;
-grant all privileges on table pass to captive;
-grant all privileges on sequence pass_id_seq to captive;
-
-Then:
-
-/etc/init.d/squid restart
-
-In order to start the captive portal:
-
-sudo /etc/init.d/captive_portal_redirect start
-
-and to stop:
-
-sudo /etc/init.d/captive_portal_redirect stop
-
-
+eg:
+`./provision.sh "/home/root/exitnode"`
