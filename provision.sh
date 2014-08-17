@@ -81,15 +81,12 @@ fi
 
 # Sorry this is so ugly - I'm not a very good bash programmer - maxb
 CFG="/opt/tunneldigger/broker/l2tp_broker.cfg"
-CFG_TMP="/tmp/tun_cfg_new"
-sed "s/address=[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+/address=$PUBLIC_IP/" $CFG >$CFG_TMP
-cp $CFG_TMP $CFG
-sed "s/interface=lo/interface=$ETH_IF/" $CFG >$CFG_TMP
-cp $CFG_TMP $CFG
+sed -i "" "s/address=[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+/address=$PUBLIC_IP/" $CFG
+sed -i "" "s/interface=lo/interface=$ETH_IF/" $CFG 
 
 pip install virtualenv
 
-rm -rf /opt/tunneldigger # ONLY NECESSARY IF WE WANT TO CLEAN UP LAST TUNNELDIGGER INSTALL
+# rm -rf /opt/tunneldigger # ONLY NECESSARY IF WE WANT TO CLEAN UP LAST TUNNELDIGGER INSTALL
 git clone https://github.com/sudomesh/tunneldigger.git /opt/tunneldigger
 cd /opt/tunneldigger/broker
 virtualenv env_tunneldigger
@@ -110,13 +107,13 @@ cd /home
 # /etc/init.d/captive_portal_redirect start
 
 # node stuffs
-cp $SRC_DIR/.profile ~/.profile
-mkdir ~/nvm
-cd ~/nvm
-curl https://raw.githubusercontent.com/creationix/nvm/v0.10.0/install.sh | bash
-source ~/.profile; 
-nvm install 0.10; 
-nvm use 0.10;
+#cp $SRC_DIR/.profile ~/.profile
+# mkdir ~/nvm
+# cd ~/nvm
+# curl https://raw.githubusercontent.com/creationix/nvm/v0.10.0/install.sh | bash
+# source ~/.profile; 
+# nvm install 0.10; 
+# nvm use 0.10;
 
 
 # ssh stuffs
