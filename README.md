@@ -42,6 +42,8 @@ Then take a look at the provision.sh script. The first few lines are configs in 
 
     PUBLIC_IP="$(ifconfig | grep -A 1 "$ETH_IF" | tail -1 | cut -d ':' -f 2 | cut -d ' ' -f 1)"
 
+### Run Provision Script
+
 After editing these variables, you can run `./provision.sh <ARGUMENT1>` where ARGUMENT1 is the location of the exitnode repo folder. For example:
 
     ./provision.sh /home/root/exitnode
