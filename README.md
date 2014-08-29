@@ -13,6 +13,15 @@ We've set up a basic provisioning script, which is VERY MUCH A WORK IN PROGRESS,
 # Installation #
 
 ## Debian ##
+
+### Quick Install ###
+
+Installs with default configuration (not always desirable). Copy the file `quick_install.sh` to desired machine. Run as root:
+
+    ./quick_install.sh
+
+## Full Install ###
+
 On a debian distro, all you should need is git. Run the following as root:
 
     apt-get install git
