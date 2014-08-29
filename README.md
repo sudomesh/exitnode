@@ -16,7 +16,7 @@ We've set up a basic provisioning script, which is VERY MUCH A WORK IN PROGRESS,
 
 ### Quick Install ###
 
-Warnign: installs with default configuration (not always desirable). Copy the file `quick_install.sh` to desired machine. Run as root:
+Warning: installs with default configuration (not always desirable). Copy the file `quick_install.sh` to desired machine. Run as root:
 
     ./quick_install.sh
 
