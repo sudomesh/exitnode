@@ -16,11 +16,11 @@ We've set up a basic provisioning script, which is VERY MUCH A WORK IN PROGRESS,
 
 ### Quick Install ###
 
-Installs with default configuration (not always desirable). Copy the file `quick_install.sh` to desired machine. Run as root:
+Warnign: installs with default configuration (not always desirable). Copy the file `quick_install.sh` to desired machine. Run as root:
 
     ./quick_install.sh
 
-## Full Install ###
+### Normal Install ###
 
 On a debian distro, all you should need is git. Run the following as root:
 
