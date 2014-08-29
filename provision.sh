@@ -57,10 +57,6 @@ do
   modprobe $module
 done
 
- 
-
-#@@TODO: check if already in /etc/modules and if not echo >> into /etc/modules
-
 # All exitnode file configs
 cp -r $SRC_DIR/src/etc/* /etc/
 cp -r $SRC_DIR/src/var/* /var/
