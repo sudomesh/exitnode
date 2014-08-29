@@ -112,8 +112,6 @@ cd /home
 # @@TODO: BETTER PASSWORD/Public Key
 # echo 'root:sudoer' | chpasswd
 
-alias ls="ls -la"
-
 # nginx stuffs
 cp $SRC_DIR/nginx.conf /etc/nginx/nginx.conf
 
