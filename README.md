@@ -35,19 +35,19 @@ Then take a look at the provision.sh script. The first few lines are configs in 
 
 ### Provision Configuration Variables
 
-`MESH_IP` sets IP address of exitnode on local network
+Set IP address of exitnode on local network
 
     MESH_IP=10.42.0.99
 
-`MESH_MTU` specifies [maximum transmission unit (MTU)](https://en.wikipedia.org/wiki/Maximum_transmission_unit), maximum for ethernet is 1500, default 1400.
+Specify [maximum transmission unit (MTU)](https://en.wikipedia.org/wiki/Maximum_transmission_unit), maximum for ethernet is 1500, default 1400.
 
     MESH_MTU=1400
 
-`ETH_IF` sets the name of the ethernet interface to the external network (internet)
+Set the name of the ethernet interface to the external network (internet)
 
     ETH_IF=eth0
 
-`PUBLIC_IP` sets IP address of exitnode on external network (internet)
+Set IP address of exitnode on external network (internet)
 
     PUBLIC_IP="$(ifconfig | grep -A 1 "$ETH_IF" | tail -1 | cut -d ':' -f 2 | cut -d ' ' -f 1)"
 
