@@ -57,14 +57,6 @@ do
   modprobe $module
 done
 
- 
-
-#@@TODO: check if already in /etc/modules and if not echo >> into /etc/modules
-
-# Totally uneccessary fancy vim config
-git clone https://github.com/max-b/vimrc.git ~/.vim_runtime
-sh ~/.vim_runtime/install_awesome_vimrc.sh
-
 # All exitnode file configs
 cp -r $SRC_DIR/src/etc/* /etc/
 cp -r $SRC_DIR/src/var/* /var/
@@ -119,8 +111,6 @@ cd /home
 # ssh stuffs
 # @@TODO: BETTER PASSWORD/Public Key
 # echo 'root:sudoer' | chpasswd
-
-alias ls="ls -la"
 
 # nginx stuffs
 cp $SRC_DIR/nginx.conf /etc/nginx/nginx.conf
