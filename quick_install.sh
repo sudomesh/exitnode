@@ -3,7 +3,7 @@
 cd ~/
 
 # install git
-apt-get upgrade && apt-get install git -y --force-yes
+apt-get update && apt-get install git -y --force-yes
 
 # grab script
 git clone https://github.com/sudomesh/exitnode.git
