@@ -66,8 +66,32 @@ if grep -q "bat0" /etc/network/interfaces
 then
   echo "bat0 already configured in /etc/network/interfaces"
 else
-  echo "iface bat0 inet static\n  address $MESH_IP\n  netmask 255.0.0.0\n  mtu $MESH_MTU" >> /etc/network/interfaces
+  cat >>/etc/network/interfaces <<EOF
+
+# Batman interface
+# (1) Ugly hack to keep bat0 up: add a dummy tap device
+# (2) Add iptables rule to masquerade traffic from the mesh
+auto bat0
+iface bat0 inet static
+        pre-up ip tuntap add dev bat-tap mode tap
+        pre-up ip link set bat-tap up
+        post-up iptables -t nat -A POSTROUTING -s 10.0.0.0/8 ! -d 10.0.0.0/8 -j MASQUERADE
+        pre-down iptables -t nat -D POSTROUTING -s 10.0.0.0/8 ! -d 10.0.0.0/8 -j MASQUERADE
+        post-down ip link set bat-tap down
+        post-down ip tuntap del dev bat-tap mode tap
+        address $MESH_IP
+        netmask 255.0.0.0
+        mtu $MESH_MTU
+
+# Logical interface to manage adding tunnels to bat0
+iface mesh-tunnel inet manual
+        up ip link set $IFACE up
+        post-up batctl if add $IFACE
+        pre-down batctl if del $IFACE
+        down ip link set $IFACE down
+EOF
 fi
+
 
 # Setup public ip in tunneldigger.cfg
 
