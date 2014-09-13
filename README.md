@@ -55,7 +55,7 @@ Set IP address of exitnode on external network (internet)
 
 After editing these variables, you can run `./provision.sh <ARGUMENT1>` where ARGUMENT1 is the location of the exitnode repo folder. For example:
 
-    ./provision.sh /home/root/exitnode
+    ./provision.sh /root/exitnode
 
 ## Other Linux ##
 
