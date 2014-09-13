@@ -91,8 +91,10 @@ auto bat0
 iface bat0 inet static
         pre-up ip tuntap add dev bat-tap mode tap
         pre-up ip link set bat-tap up
+        pre-up batctl if add bat-tap
         post-up iptables -t nat -A POSTROUTING -s 10.0.0.0/8 ! -d 10.0.0.0/8 -j MASQUERADE
         pre-down iptables -t nat -D POSTROUTING -s 10.0.0.0/8 ! -d 10.0.0.0/8 -j MASQUERADE
+        post-down batctl if del bat-tap
         post-down ip link set bat-tap down
         post-down ip tuntap del dev bat-tap mode tap
         address $MESH_IP
@@ -101,10 +103,10 @@ iface bat0 inet static
 
 # Logical interface to manage adding tunnels to bat0
 iface mesh-tunnel inet manual
-        up ip link set $IFACE up
-        post-up batctl if add $IFACE
-        pre-down batctl if del $IFACE
-        down ip link set $IFACE down
+        up ip link set \$IFACE up
+        post-up batctl if add \$IFACE
+        pre-down batctl if del \$IFACE
+        down ip link set \$IFACE down
 EOF
 fi
 
