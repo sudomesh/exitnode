@@ -137,6 +137,7 @@ cd /home
 update-rc.d tunneldigger defaults
 #update-rc.d gateway defaults
 
+service tunneldigger start
 
 # Squid + redirect stuff for captive portal
 # /etc/init.d/squid restart
