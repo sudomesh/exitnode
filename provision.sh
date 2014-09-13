@@ -21,7 +21,6 @@ apt-get update && apt-get install -y --force-yes \
   libssl-dev \
   libxslt1-dev \
   module-init-tools \
-  batctl \
   bridge-utils \
   openssh-server \
   openssl \
@@ -42,7 +41,24 @@ apt-get update && apt-get install -y --force-yes \
   libevent-dev \
   ebtables \
   vim \
-  tmux
+  tmux \
+  linux-headers-amd64
+
+mkdir /root/batman-build
+cd /root/batman-build
+
+# batctl wasn't building, so I think for now we can build the version of batman-adv
+# that we like and we can use the current debian batctl package. I think it's ok 
+# if those two are different - maxb
+wget downloads.open-mesh.org/batman/stable/sources/batman-adv/batman-adv-2013.4.0.tar.gz
+# wget downloads.open-mesh.org/batman/stable/sources/batctl/batctl-2014.3.0.tar.gz
+tar -xvf batman-adv-2013.4.0.tar.gz 
+# tar -xvf batctl-2014.3.0.tar.gz
+cd batman-adv-2013.4.0
+make && make install
+# cd ../batctl-2014.3.0
+# make && make install
+apt-get install -y batctl
 
 REQUIRED_MODULES="nf_conntrack_netlink nf_conntrack nfnetlink l2tp_netlink l2tp_core l2tp_eth batman_adv"
 
@@ -117,6 +133,12 @@ echo "host captive captive 127.0.0.1/32 md5" >> /etc/postgresql/9.1/main/pg_hba.
 cp $SRC_DIR/setupcaptive.sql /home/
 cd /home
 /etc/init.d/postgresql restart; su postgres -c "ls -la";su postgres -c "pwd"; su postgres -c "psql -f setupcaptive.sql -d postgres"
+
+# @@TODO - Do we need to add these to startup?
+# adding init.d scripts to startup
+#update-rc.d tunneldigger defaults
+#update-rc.d gateway defaults
+
 
 # Squid + redirect stuff for captive portal
 # /etc/init.d/squid restart
