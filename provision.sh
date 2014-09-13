@@ -123,8 +123,8 @@ cp /opt/tunneldigger/broker/scripts/tunneldigger-broker.init.d /etc/init.d/tunne
 # Setup public ip in tunneldigger.cfg
 # Sorry this is so ugly - I'm not a very good bash programmer - maxb
 CFG="/opt/tunneldigger/broker/l2tp_broker.cfg"
-sed -i "" "s/address=[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+/address=$PUBLIC_IP/" $CFG
-sed -i "" "s/interface=lo/interface=$ETH_IF/" $CFG 
+sed -i.bak "s/address=[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+/address=$PUBLIC_IP/" $CFG
+sed -i.bak "s/interface=lo/interface=$ETH_IF/" $CFG 
 
 echo "host captive captive 127.0.0.1/32 md5" >> /etc/postgresql/9.1/main/pg_hba.conf 
 
@@ -134,7 +134,7 @@ cd /home
 
 # @@TODO - Do we need to add these to startup?
 # adding init.d scripts to startup
-#update-rc.d tunneldigger defaults
+update-rc.d tunneldigger defaults
 #update-rc.d gateway defaults
 
 
