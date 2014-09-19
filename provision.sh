@@ -13,7 +13,6 @@ else
 fi
 
 apt-get update && apt-get install -y --force-yes \
-  nginx \
   build-essential \
   ca-certificates \
   curl \
@@ -160,7 +159,12 @@ service tunneldigger start
 # echo 'root:sudoer' | chpasswd
 
 # nginx stuffs
+echo "deb http://nginx.org/packages/debian/ squeeze nginx" >> /etc/apt/sources.list
+echo "deb-src http://nginx.org/packages/debian/ squeeze nginx" >> /etc/apt/sources.list
+apt-get update
+apt-get install -y --force-yes nginx
 cp $SRC_DIR/nginx.conf /etc/nginx/nginx.conf
+service nginx start
 
 # IP Forwarding
 sed -i.backup 's/\(.*net.ipv4.ip_forward.*\)/# Enable forwarding for mesh (altered by provisioning script)\nnet.ipv4.ip_forward=1/' /etc/sysctl.conf
