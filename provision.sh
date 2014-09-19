@@ -164,8 +164,11 @@ echo "deb-src http://nginx.org/packages/debian/ wheezy nginx" >> /etc/apt/source
 apt-get update
 apt-get install -y --force-yes nginx
 cp $SRC_DIR/nginx.conf /etc/nginx/nginx.conf
+update-rc.d nginx defaults
 service nginx start
 
 # IP Forwarding
 sed -i.backup 's/\(.*net.ipv4.ip_forward.*\)/# Enable forwarding for mesh (altered by provisioning script)\nnet.ipv4.ip_forward=1/' /etc/sysctl.conf
 echo "1" > /proc/sys/net/ipv4/ip_forward
+
+reboot
