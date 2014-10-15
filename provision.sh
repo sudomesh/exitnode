@@ -89,9 +89,11 @@ else
 auto bat0
 iface bat0 inet static
         pre-up ip tuntap add dev bat-tap mode tap
+        pre-up ip link set mtu 1400 dev bat-tap
         pre-up ip link set bat-tap up
         pre-up batctl if add bat-tap
         post-up iptables -t nat -A POSTROUTING -s 10.0.0.0/8 ! -d 10.0.0.0/8 -j MASQUERADE
+        post-up ip link set mtu $MESH_MTU dev bat0
         pre-down iptables -t nat -D POSTROUTING -s 10.0.0.0/8 ! -d 10.0.0.0/8 -j MASQUERADE
         post-down batctl if del bat-tap
         post-down ip link set bat-tap down
@@ -104,6 +106,7 @@ iface bat0 inet static
 iface mesh-tunnel inet manual
         up ip link set \$IFACE up
         post-up batctl if add \$IFACE
+        post-up ip link set mtu $MESH_MTU dev bat0
         pre-down batctl if del \$IFACE
         down ip link set \$IFACE down
 EOF
