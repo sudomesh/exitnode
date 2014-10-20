@@ -93,8 +93,12 @@ iface bat0 inet static
         pre-up ip link set bat-tap up
         pre-up batctl if add bat-tap
         post-up iptables -t nat -A POSTROUTING -s 10.0.0.0/8 ! -d 10.0.0.0/8 -j MASQUERADE
+        post-up iptables -t mangle -A POSTROUTING -s 10.0.0.0/8 -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu
+        post-up iptables -t mangle -A POSTROUTING -d 10.0.0.0/8 -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu
         post-up ip link set mtu $MESH_MTU dev bat0
         pre-down iptables -t nat -D POSTROUTING -s 10.0.0.0/8 ! -d 10.0.0.0/8 -j MASQUERADE
+        post-up iptables -t mangle -D POSTROUTING -s 10.0.0.0/8 -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu
+        post-up iptables -t mangle -D POSTROUTING -d 10.0.0.0/8 -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu
         post-down batctl if del bat-tap
         post-down ip link set bat-tap down
         post-down ip tuntap del dev bat-tap mode tap
