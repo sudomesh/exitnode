@@ -64,6 +64,23 @@ done
 cp -r $SRC_DIR/src/etc/* /etc/
 cp -r $SRC_DIR/src/var/* /var/
 
+# Check if bat0 already has configs
+if grep -q "mesh-tunnel" /etc/network/interfaces
+then
+  echo "mesh tunnel already configured in /etc/network/interfaces"
+else
+  cat >>/etc/network/interfaces <<EOF
+  # Mesh interface
+# Logical interface to manage adding tunnels to bat0
+iface mesh-tunnel inet manual
+  up ip link set \$IFACE up
+  post-up bmx6 -c dev=\$IFACE || bmx6 dev=\$IFACE
+  post-up bmx6 -c tunDev=Default /tun4Address=$MESH_IP/32 
+  post-up bmx6 -c tunIn=def4Offer /n=0.0.0.0/0 /b=32000000
+  pre-down bmx6 -c dev=\$IFACE
+down ip link set \$IFACE down
+EOF
+fi
 
 pip install virtualenv
 
