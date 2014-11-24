@@ -43,7 +43,7 @@ apt-get update && apt-get install -y --force-yes \
   linux-headers-amd64
 
 cd /root
-git clone https://github.com/axn/bmx6.git bmx
+git clone https://github.com/axn/bmx6.git bmx6
 cd /root/bmx6
 make all && make install
 
