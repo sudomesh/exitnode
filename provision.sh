@@ -42,10 +42,7 @@ apt-get update && apt-get install -y --force-yes \
   tmux \
   linux-headers-amd64
 
-cd /root
-git clone https://github.com/axn/bmx6.git bmx6
-cd /root/bmx6
-make all && make install
+apt-get install babeld
 
 REQUIRED_MODULES="nf_conntrack_netlink nf_conntrack nfnetlink l2tp_netlink l2tp_core l2tp_eth"
 
@@ -64,6 +61,11 @@ done
 cp -r $SRC_DIR/src/etc/* /etc/
 cp -r $SRC_DIR/src/var/* /var/
 
+# Leftover from bmx
+  # post-up bmx6 -c tunDev=Default /tun4Address=$MESH_IP/32 
+  # post-up bmx6 -c tunIn=def4Offer /n=0.0.0.0/0 /b=32000000
+  # pre-down bmx6 -c dev=\$IFACE
+
 # Check if bat0 already has configs
 if grep -q "mesh-tunnel" /etc/network/interfaces
 then
@@ -71,13 +73,11 @@ then
 else
   cat >>/etc/network/interfaces <<EOF
   # Mesh interface
-# Logical interface to manage adding tunnels to bat0
+# Logical interface to manage adding tunnels to babel
 iface mesh-tunnel inet manual
   up ip link set \$IFACE up
-  post-up bmx6 -c dev=\$IFACE || bmx6 dev=\$IFACE
-  post-up bmx6 -c tunDev=Default /tun4Address=$MESH_IP/32 
-  post-up bmx6 -c tunIn=def4Offer /n=0.0.0.0/0 /b=32000000
-  pre-down bmx6 -c dev=\$IFACE
+  post-up babeld -D \$IFACE || babel \$IFACE
+  post-up babeld -d1 -C 'redistribute metric 128' \$IFACE
 down ip link set \$IFACE down
 EOF
 fi
