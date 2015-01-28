@@ -1,6 +1,7 @@
 #!/bin/sh
 
 MESH_IP=10.42.0.99
+MESH_PREFIX=32
 ETH_IF=eth0
 PUBLIC_IP="$(ifconfig | grep -A 1 "$ETH_IF" | tail -1 | cut -d ':' -f 2 | cut -d ' ' -f 1)" 
 
@@ -42,7 +43,11 @@ apt-get update && apt-get install -y --force-yes \
   tmux \
   linux-headers-amd64
 
-apt-get install babeld
+mkdir ~/babel_build
+git clone https://github.com/sudomesh/babeld.git ~/babel_build/
+cd ~/babel_build
+
+make && make install
 
 REQUIRED_MODULES="nf_conntrack_netlink nf_conntrack nfnetlink l2tp_netlink l2tp_core l2tp_eth"
 
@@ -61,27 +66,6 @@ done
 cp -r $SRC_DIR/src/etc/* /etc/
 cp -r $SRC_DIR/src/var/* /var/
 
-# Leftover from bmx
-  # post-up bmx6 -c tunDev=Default /tun4Address=$MESH_IP/32 
-  # post-up bmx6 -c tunIn=def4Offer /n=0.0.0.0/0 /b=32000000
-  # pre-down bmx6 -c dev=\$IFACE
-
-# Check if bat0 already has configs
-if grep -q "mesh-tunnel" /etc/network/interfaces
-then
-  echo "mesh tunnel already configured in /etc/network/interfaces"
-else
-  cat >>/etc/network/interfaces <<EOF
-  # Mesh interface
-# Logical interface to manage adding tunnels to babel
-iface mesh-tunnel inet manual
-  up ip link set \$IFACE up
-  post-up babeld -D \$IFACE || babel \$IFACE
-  post-up babeld -d1 -C 'redistribute metric 128' \$IFACE
-down ip link set \$IFACE down
-EOF
-fi
-
 pip install virtualenv
 
 # rm -rf /opt/tunneldigger # ONLY NECESSARY IF WE WANT TO CLEAN UP LAST TUNNELDIGGER INSTALL
@@ -93,6 +77,18 @@ virtualenv env_tunneldigger
 #
 # cp /opt/tunneldigger/broker/scripts/tunneldigger-broker.init.d /etc/init.d @@TODO: Understand the difference between the two init scripts!
 cp /opt/tunneldigger/broker/scripts/tunneldigger-broker.init.d /etc/init.d/tunneldigger
+
+# Check if mesh-tunnel already has configs
+if grep -q "babeld" /opt/tunneldigger/broker/scripts/up_hook.sh
+then
+  echo "mesh-tunnel already configured in /etc/network/interfaces"
+else
+  cat >>/opt/tunneldigger/broker/scripts/up_hook.sh <<EOF
+  #!/bin/sh
+  ip addr add $MESH_IP/$MESH_PREFIX dev \$3
+  babeld -a \$3
+EOF
+fi
 
 # Setup public ip in tunneldigger.cfg
 # Sorry this is so ugly - I'm not a very good bash programmer - maxb
