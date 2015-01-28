@@ -3,7 +3,8 @@
 MESH_IP=10.42.0.99
 MESH_PREFIX=32
 ETH_IF=eth0
-PUBLIC_IP="$(ifconfig | grep -A 1 "$ETH_IF" | tail -1 | cut -d ':' -f 2 | cut -d ' ' -f 1)" 
+PUBLIC_IP="$(ip addr show $ETH_IF | grep -oh '[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*')"
+PUBLIC_SUBNET="$(ip addr show $ETH_IF | grep -oh '[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*\/[0-9]*')"
 
 if [ "$#" -le 0 ]
 then
@@ -78,10 +79,10 @@ virtualenv env_tunneldigger
 # cp /opt/tunneldigger/broker/scripts/tunneldigger-broker.init.d /etc/init.d @@TODO: Understand the difference between the two init scripts!
 cp /opt/tunneldigger/broker/scripts/tunneldigger-broker.init.d /etc/init.d/tunneldigger
 
-# Check if mesh-tunnel already has configs
+# Check if babel tunnel is already configured 
 if grep -q "babeld" /opt/tunneldigger/broker/scripts/up_hook.sh
 then
-  echo "mesh-tunnel already configured in /etc/network/interfaces"
+  echo "babel tunnel already configured in /opt/tunneldigger/broker/scripts/up_hook.sh"
 else
   cat >>/opt/tunneldigger/broker/scripts/up_hook.sh <<EOF
   #!/bin/sh
@@ -89,6 +90,13 @@ else
   babeld -a \$3
 EOF
 fi
+
+cat >/etc/babeld.conf <<EOF
+redistribute local ip $MESH_IP/$MESH_PREFIX allow
+redistribute local ip 0.0.0.0/0 proto 3 metric 128 allow
+redistribute local ip $PUBLIC_SUBNET proto 0 deny
+redistribute local deny
+EOF
 
 # Setup public ip in tunneldigger.cfg
 # Sorry this is so ugly - I'm not a very good bash programmer - maxb
