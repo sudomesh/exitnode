@@ -88,7 +88,7 @@ else
   #!/bin/sh
   ip link set \$3 up
   ip addr add $MESH_IP/$MESH_PREFIX dev \$3
-  ifconfig \$3 mtu 1438
+  ip link \$3 set mtu 1438
   babeld -a \$3
 EOF
 fi
