@@ -86,6 +86,7 @@ then
 else
   cat >>/opt/tunneldigger/broker/scripts/up_hook.sh <<EOF
   #!/bin/sh
+  ip link set \$3 up
   ip addr add $MESH_IP/$MESH_PREFIX dev \$3
   babeld -a \$3
 EOF
