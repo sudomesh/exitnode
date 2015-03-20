@@ -12,7 +12,7 @@
 # Do NOT "set -e"
 
 ETH=eth0
-MESHNET=100.0.0.0/12
+MESHNET=100.64.0.0/10
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 DESC="Sudomesh gateway startup"
 NAME=sudomesh-gateway
@@ -44,7 +44,7 @@ do_start()
 	
   echo 1 > /proc/sys/net/ipv4/ip_forward
 
-  iptables -I POSTROUTING -s $MESHNET ! -d $MESHNET -j MASQUERADE
+  iptables -t nat -I POSTROUTING -s $MESHNET ! -d $MESHNET -j MASQUERADE
 
   return 0
 }

@@ -1,8 +1,8 @@
 #!/bin/sh
 
-MESH_IP=100.0.0.1
+MESH_IP=100.64.0.1
 MESH_PREFIX=32
-MESHNET=100.0.0.0/12
+MESHNET=100.64.0.0/10
 ETH_IF=eth0
 PUBLIC_IP="$(ip addr show $ETH_IF | grep -oh '[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*')"
 PUBLIC_SUBNET="$(ip addr show $ETH_IF | grep -oh '[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*\/[0-9]*')"
@@ -101,14 +101,17 @@ redistribute local ip $PUBLIC_SUBNET proto 0 deny
 redistribute local deny
 EOF
 
+cp $SRC_DIR/l2tp_broker.cfg /opt/tunneldigger/broker/l2tp_broker.cfg
+
 # Setup public ip in tunneldigger.cfg
 # Sorry this is so ugly - I'm not a very good bash programmer - maxb
 CFG="/opt/tunneldigger/broker/l2tp_broker.cfg"
-sed -i.bak "s/address=[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+/address=$PUBLIC_IP/" $CFG
-sed -i.bak "s/interface=lo/interface=$ETH_IF/" $CFG 
+# This following like doesn't seem to be working!
+sed -i.bak "s#address=[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+#address=$PUBLIC_IP#" $CFG
+sed -i.bak "s#interface=lo#interface=$ETH_IF#" $CFG 
 
 # Setup address for gateway script
-sed -i.bak "s/MESHNET=[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+/MESHNET=$MESHNET/" /etc/init.d/gateway
+sed -i.bak "s#MESHNET=[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+/[0-9]\+#MESHNET=$MESHNET#" /etc/init.d/gateway
 
 
 echo "host captive captive 127.0.0.1/32 md5" >> /etc/postgresql/9.1/main/pg_hba.conf 
