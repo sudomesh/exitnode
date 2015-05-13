@@ -85,11 +85,11 @@ if grep -q "babeld" /opt/tunneldigger/broker/scripts/up_hook.sh
 then
   echo "babel tunnel already configured in /opt/tunneldigger/broker/scripts/up_hook.sh"
 else
-  cat >>/opt/tunneldigger/broker/scripts/up_hook.sh <<EOF
+  cat >/opt/tunneldigger/broker/scripts/up_hook.sh <<EOF
   #!/bin/sh
   ip link set \$3 up
   ip addr add $MESH_IP/$MESH_PREFIX dev \$3
-  ip link \$3 set mtu 1438
+  ip link set dev \$3 mtu 1438
   babeld -a \$3
 EOF
 fi
@@ -123,11 +123,11 @@ cd /home
 # @@TODO - Do we need to add these to startup?
 # adding init.d scripts to startup
 update-rc.d tunneldigger defaults
-update-rc.d gateway defaults
+# update-rc.d gateway defaults
 update-rc.d babeld defaults
 
 service tunneldigger start
-service gateway start
+# service gateway start
 service babeld start
 
 # Squid + redirect stuff for captive portal
