@@ -57,6 +57,19 @@ After editing these variables, you can run `./provision.sh <ARGUMENT1>` where AR
 
     ./provision.sh /root/exitnode
 
+
+## Important notes
+
+The provision script assumes you're on Debian Jessie. If you're on Debian Wheezy, search through `provision.sh` script for "wheezy" and edit as the comments specify.
+
+You should manually tweak the line in /etc/squid3/squid.conf:
+
+```
+acl mesh src 100.64.0.0/10
+```
+
+and if your ethernet interface isn't eth0 then you need to edit the `except-interface=` line in dnsmasq.conf
+
 ## Other Linux ##
 
 Not yet supported. Accepting pull requests!

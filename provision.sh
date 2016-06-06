@@ -1,11 +1,11 @@
 #!/bin/sh
 
-MESH_IP=100.64.0.1
+MESH_IP=100.64.0.42
 MESH_PREFIX=32
 MESHNET=100.64.0.0/10
 ETH_IF=eth0
-PUBLIC_IP="$(ip addr show $ETH_IF | grep -oh '[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*')"
-PUBLIC_SUBNET="$(ip addr show $ETH_IF | grep -oh '[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*\/[0-9]*')"
+PUBLIC_IP="45.34.140.42"
+PUBLIC_SUBNET="45.34.140.42/29"
 
 if [ "$#" -le 0 ]
 then
@@ -66,8 +66,10 @@ done
 
 # All exitnode file configs
 cp -r $SRC_DIR/src/etc/* /etc/
+chmod 755 /etc/squid3/*.py
 cp -r $SRC_DIR/src/var/* /var/
 
+pip install netfilter
 pip install virtualenv
 
 # rm -rf /opt/tunneldigger # ONLY NECESSARY IF WE WANT TO CLEAN UP LAST TUNNELDIGGER INSTALL
@@ -76,9 +78,6 @@ cd /opt/tunneldigger/broker
 virtualenv env_tunneldigger
 /opt/tunneldigger/broker/env_tunneldigger/bin/pip install -r requirements.txt
 
-#
-# cp /opt/tunneldigger/broker/scripts/tunneldigger-broker.init.d /etc/init.d @@TODO: Understand the difference between the two init scripts!
-cp /opt/tunneldigger/broker/scripts/tunneldigger-broker.init.d /etc/init.d/tunneldigger
 
 # Check if babel tunnel is already configured 
 if grep -q "babeld" /opt/tunneldigger/broker/scripts/up_hook.sh
@@ -93,6 +92,7 @@ else
   babeld -a \$3
 EOF
 fi
+chmod 755 /opt/tunneldigger/broker/scripts/up_hook.sh
 
 cat >/etc/babeld.conf <<EOF
 redistribute local ip $MESH_IP/$MESH_PREFIX allow
@@ -114,21 +114,28 @@ sed -i.bak "s#interface=lo#interface=$ETH_IF#" $CFG
 sed -i.bak "s#MESHNET=[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+/[0-9]\+#MESHNET=$MESHNET#" /etc/init.d/gateway
 
 
-echo "host captive captive 127.0.0.1/32 md5" >> /etc/postgresql/9.1/main/pg_hba.conf 
+# Use this line instead for wheezy
+# echo "host captive captive 127.0.0.1/32 md5" >> /etc/postgresql/9.1/main/pg_hba.conf 
+echo "host captive captive 127.0.0.1/32 md5" >> /etc/postgresql/9.4/main/pg_hba.conf 
 
 cp $SRC_DIR/setupcaptive.sql /home/
 cd /home
-/etc/init.d/postgresql restart; su postgres -c "ls -la";su postgres -c "pwd"; su postgres -c "psql -f setupcaptive.sql -d postgres"
+/etc/init.d/postgresql restart; su postgres -c "psql -f setupcaptive.sql -d postgres"
 
 # @@TODO - Do we need to add these to startup?
 # adding init.d scripts to startup
 update-rc.d tunneldigger defaults
 # update-rc.d gateway defaults
 update-rc.d babeld defaults
+update-rc.d gateway
+update-rc.d captive_portal_redirect
 
+service gateway start
+service captive_portal_redirect start
 service tunneldigger start
 # service gateway start
 service babeld start
+
 
 # Squid + redirect stuff for captive portal
 # /etc/init.d/squid restart
@@ -143,14 +150,17 @@ service babeld start
 # nvm install 0.10; 
 # nvm use 0.10;
 
+# uncomment for debian wheezy
 # nginx stuffs
-echo "deb http://nginx.org/packages/debian/ wheezy nginx" >> /etc/apt/sources.list
-echo "deb-src http://nginx.org/packages/debian/ wheezy nginx" >> /etc/apt/sources.list
-apt-get update
-apt-get install -y --force-yes nginx
-cp $SRC_DIR/nginx.conf /etc/nginx/nginx.conf
-update-rc.d nginx defaults
-service nginx start
+#echo "deb http://nginx.org/packages/debian/ wheezy nginx" >> /etc/apt/sources.list
+#echo "deb-src http://nginx.org/packages/debian/ wheezy nginx" >> /etc/apt/sources.list
+#apt-get update
+#apt-get install -y --force-yes nginx
+#cp $SRC_DIR/nginx.conf /etc/nginx/nginx.conf
+#update-rc.d nginx defaults
+#service nginx start
+
+rm -f /var/www/html/index*.html
 
 # IP Forwarding
 sed -i.backup 's/\(.*net.ipv4.ip_forward.*\)/# Enable forwarding for mesh (altered by provisioning script)\nnet.ipv4.ip_forward=1/' /etc/sysctl.conf

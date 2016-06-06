@@ -1,8 +1,8 @@
 #!/bin/sh
 ### BEGIN INIT INFO
 # Provides:          tunneldigger-broker
-# Required-Start:    $local_fs $remote_fs $network $syslog exim4 
-# Required-Stop:     $local_fs $remote_fs $network $syslog exim4
+# Required-Start:    $local_fs $remote_fs $network $syslog
+# Required-Stop:     $local_fs $remote_fs $network $syslog
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
 # Short-Description: Tunneldigger L2TPv3 brokerage daemon
@@ -14,7 +14,7 @@
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 DESC="Tunneldigger brokerage daemon"
 NAME=tunneldigger-broker
-PROJECT_PATH=/opt/tunneldigger/broker
+PROJECT_PATH=/opt/tunneldigger
 SCRIPTNAME=/etc/init.d/$NAME
 DAEMON=/opt/tunneldigger/broker/env_tunneldigger/bin/python
 DAEMON_CHDIR=$PROJECT_PATH
@@ -26,7 +26,7 @@ PIDFILE=/var/run/$NAME.pid
 STARTSTOP_OPTS='--quiet --exec $DAEMON --chdir $DAEMON_CHDIR \
  --chuid $DAEMON_USER --user $DAEMON_USER --group $DAEMON_GROUP'
 START_OPTS='--background --make-pidfile'
-DAEMON_ARGS='l2tp_broker.py /opt/tunneldigger/broker/l2tp_broker.cfg'
+DAEMON_ARGS='-m broker.main /opt/tunneldigger/broker/l2tp_broker.cfg'
 
 # Activate virtualenv Python environment
 . /opt/tunneldigger/broker/env_tunneldigger/bin/activate

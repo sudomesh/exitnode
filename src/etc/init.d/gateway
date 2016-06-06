@@ -1,8 +1,8 @@
 #!/bin/sh
 ### BEGIN INIT INFO
 # Provides:          sudomesh-gateway
-# Required-Start:    $local_fs $remote_fs $network $syslog exim4 
-# Required-Stop:     $local_fs $remote_fs $network $syslog exim4
+# Required-Start:    $local_fs $remote_fs $network $syslog
+# Required-Stop:     $local_fs $remote_fs $network $syslog
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
 # Short-Description: Sudomesh gateway startup
@@ -11,7 +11,6 @@
 
 # Do NOT "set -e"
 
-ETH=eth0
 MESHNET=100.64.0.0/10
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 DESC="Sudomesh gateway startup"
