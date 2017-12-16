@@ -1,9 +1,0 @@
-sudo: required
-
-language: c
-
-compiler:
-  - gcc
-
-script: 
-  - sudo apt update; sudo apt install virtualbox vagrant; vagrant up; 
