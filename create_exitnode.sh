@@ -1,11 +1,13 @@
 #!/bin/sh
 
+IP=$1
+
 MESH_IP=100.64.0.42
 MESH_PREFIX=32
 MESHNET=100.64.0.0/10
 ETH_IF=eth0
-PUBLIC_IP="45.34.140.42"
-PUBLIC_SUBNET="45.34.140.42/29"
+PUBLIC_IP=$IP
+PUBLIC_SUBNET="$IP/29"
 
 apt-get update && apt-get install -y --force-yes \
   build-essential \

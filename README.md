@@ -6,66 +6,22 @@ exitnode
 Our exit node is currently a single relay and exit server. All of the public traffic on peoplesopen.net access points is routed over an l2tp tunnel with tunneldigger through our exit server.
 In this way, creating a new exit server would essentially create a new "mesh". For the time being, all sudomesh/peoplesopen.net traffic must travel over a single exit server in order to remain on the same network.
 
-The l2tp kernel module is currently not compiled into Ubuntu, so we're using Debian.
-
-We've set up a basic provisioning script, which is VERY MUCH A WORK IN PROGRESS, but should eventually take care of all of the steps required to set up and configure a new exit server.
+__work in progress__
 
 # Installation #
 
-## Debian ##
+(is being tested on digitalocean ubuntu 16.04)
 
-### Quick Install ###
+## Ubuntu ##
 
-Warning: installs with default configuration (not always desirable). Copy the file `quick_install.sh` to desired machine. Run as root:
+Create a server (e.g., digitalocean on some other place) with Ubuntu 16.04 on it. 
 
-    ./quick_install.sh
+Clone this repository on your local machine.
 
-### Normal Install ###
-
-On a debian distro, all you should need is git. Run the following as root:
-
-    apt-get install git
-
-In a home dir:
-
-    git clone https://github.com/sudomesh/exitnode.git
-    cd exitnode
-
-Then take a look at the provision.sh script. The first few lines are configs in order to set up the public IP of the exit server and the mesh IP.
-
-### Provision Configuration Variables
-
-Set IP address of exitnode on local network
-
-    MESH_IP=10.42.0.99
-
-Specify [maximum transmission unit (MTU)](https://en.wikipedia.org/wiki/Maximum_transmission_unit), maximum for ethernet is 1500, default 1400.
-
-    MESH_MTU=1400
-
-Set the name of the ethernet interface to the external network (internet)
-
-    ETH_IF=eth0
-
-Set IP address of exitnode on external network (internet)
-
-    PUBLIC_IP="$(ifconfig | grep -A 1 "$ETH_IF" | tail -1 | cut -d ':' -f 2 | cut -d ' ' -f 1)"
-
-### Run Provision Script
-
-After editing these variables, you can run `./provision.sh <ARGUMENT1>` where ARGUMENT1 is the location of the exitnode repo folder. For example:
-
-    ./provision.sh /root/exitnode
-
-
-## Important notes
-
-The provision script assumes you're on Debian Jessie. If you're on Debian Wheezy, search through `provision.sh` script for "wheezy" and edit as the comments specify.
-
-You should manually tweak the line in /etc/squid3/squid.conf:
+Now run: 
 
 ```
-acl mesh src 100.64.0.0/10
+ssh root@[ip exit node] 'bash -s' < create_exitnode.sh [ip exit node]
 ```
 
 and if your ethernet interface isn't eth0 then you need to edit the `except-interface=` line in dnsmasq.conf
