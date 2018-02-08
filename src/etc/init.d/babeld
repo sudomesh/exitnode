@@ -21,6 +21,7 @@ PATH=/sbin:/usr/sbin:/bin:/usr/bin:/usr/local/bin
 DESC="Babel routing daemon"
 NAME=babeld
 DAEMON=/usr/local/bin/$NAME
+DAEMON_ARGS=-F
 PIDFILE=/var/run/$NAME.pid
 SCRIPTNAME=/etc/init.d/$NAME
 
@@ -29,12 +30,6 @@ SCRIPTNAME=/etc/init.d/$NAME
 
 # Read configuration variable file if it is present
 [ -r /etc/default/$NAME ] && . /etc/default/$NAME
-
-# Exit if there is no interfaces
-if [ -z "$INTERFACES" ]; then
-  echo "$DESC: no interfaces to operate on"
-  exit 0
-fi
 
 # Load the VERBOSE setting and other rcS variables
 . /lib/init/vars.sh
