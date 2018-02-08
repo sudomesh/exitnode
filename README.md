@@ -24,8 +24,23 @@ Now run:
 ssh root@[ip exit node] 'bash -s' < create_exitnode.sh [ip exit node]
 ```
 
-and if your ethernet interface isn't eth0 then you need to edit the `except-interface=` line in dnsmasq.conf
+Expected output should be something like:
 
-## Other Linux ##
+```
+Get:1 http://security.ubuntu.com/ubuntu xenial-security InRelease [102 kB]
+Hit:2 http://ams2.mirrors.digitalocean.com/ubuntu xenial InRelease
+Get:3 http://security.ubuntu.com/ubuntu xenial-security/main Sources [108 kB]
+Get:5 http://security.ubuntu.com/ubuntu xenial-security/restricted Sources [2,116 B]
+[...]
+Cloning into '/opt/exitnode'...
+tunneldigger.service is not a native service, redirecting to systemd-sysv-install
+Executing /lib/systemd/systemd-sysv-install enable tunneldigger
+babeld.service is not a native service, redirecting to systemd-sysv-install
+Executing /lib/systemd/systemd-sysv-install enable babeld
+```
 
-Not yet supported. Accepting pull requests!
+# Testing
+
+TODO outlines procedures on how to check whether the exit node is functioning properly. 
+
+
