@@ -72,12 +72,13 @@ pip install netfilter
 pip install virtualenv
 
 TUNNELDIGGER_HOME=/opt/tunneldigger
-git clone https://github.com/sudomesh/tunneldigger.git $TUNNELDIGGER_HOME
+git clone https://github.com/jhpoelen/tunneldigger.git $TUNNELDIGGER_HOME
 virtualenv $TUNNELDIGGER_HOME/broker/env_tunneldigger
 $TUNNELDIGGER_HOME/broker/env_tunneldigger/bin/pip install -r $TUNNELDIGGER_HOME/broker/requirements.txt
 
 cat > $TUNNELDIGGER_HOME/broker/scripts/up_hook.sh <<EOF
 #!/bin/sh
+echo "$(date) [td-hook] $*" >> /var/log/tunneldigger.log
 ip link set \$3 up
 ip addr add $MESH_IP/$MESH_PREFIX dev \$3
 ip link set dev \$3 mtu \$4
