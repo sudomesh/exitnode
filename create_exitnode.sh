@@ -74,7 +74,7 @@ pip install virtualenv
 TUNNELDIGGER_HOME=/opt/tunneldigger
 git clone https://github.com/sudomesh/tunneldigger.git $TUNNELDIGGER_HOME
 virtualenv $TUNNELDIGGER_HOME/broker/env_tunneldigger
-$TUNNELDIGGER_HOME/broker/env_tunneldigger/bin/pip install -r requirements.txt
+$TUNNELDIGGER_HOME/broker/env_tunneldigger/bin/pip install -r $TUNNELDIGGER_HOME/broker/requirements.txt
 
 cat > $TUNNELDIGGER_HOME/broker/scripts/up_hook.sh <<EOF
 #!/bin/sh
@@ -104,14 +104,14 @@ sed -i.bak "s#address=[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+#address=$PUBLIC_IP#" $C
 sed -i.bak "s#interface=lo#interface=$ETH_IF#" $CFG 
 
 # adding init.d scripts to startup
-#update-rc.d tunneldigger defaults
-#update-rc.d babeld defaults
+systemctl enable tunneldigger
+systemctl enable babeld
 
-#service tunneldigger start
-#service babeld start
+service tunneldigger start
+service babeld start
 
 # IP Forwarding
 sed -i.backup 's/\(.*net.ipv4.ip_forward.*\)/# Enable forwarding for mesh (altered by provisioning script)\nnet.ipv4.ip_forward=1/' /etc/sysctl.conf
 echo "1" > /proc/sys/net/ipv4/ip_forward
 
-#reboot now
+reboot now
