@@ -105,9 +105,11 @@ sed -i.bak "s#address=[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+#address=$PUBLIC_IP#" $C
 sed -i.bak "s#interface=lo#interface=$ETH_IF#" $CFG 
 
 # start babeld and tunnel digger on reboot
+systemctl enable gateway
 systemctl enable tunneldigger
 systemctl enable babeld
 
+service gateway start
 service tunneldigger start
 service babeld start
 
