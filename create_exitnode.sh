@@ -71,13 +71,12 @@ pip install --upgrade pip
 pip install netfilter
 pip install virtualenv
 
-git clone https://github.com/sudomesh/tunneldigger.git /opt/tunneldigger
-cd /opt/tunneldigger/broker
-virtualenv env_tunneldigger
-/opt/tunneldigger/broker/env_tunneldigger/bin/pip install -r requirements.txt
+TUNNELDIGGER_HOME=/opt/tunneldigger
+git clone https://github.com/sudomesh/tunneldigger.git $TUNNELDIGGER_HOME
+virtualenv $TUNNELDIGGER_HOME/broker/env_tunneldigger
+$TUNNELDIGGER_HOME/broker/env_tunneldigger/bin/pip install -r requirements.txt
 
-
-cat >/opt/tunneldigger/broker/scripts/up_hook.sh <<EOF
+cat > $TUNNELDIGGER_HOME/broker/scripts/up_hook.sh <<EOF
 #!/bin/sh
 ip link set \$3 up
 ip addr add $MESH_IP/$MESH_PREFIX dev \$3
@@ -94,11 +93,13 @@ redistribute local ip $PUBLIC_SUBNET proto 0 deny
 redistribute local deny
 EOF
 
-cp /opt/tunneldigger/broker/l2tp_broker.cfg.example /opt/tunneldigger/broker/l2tp_broker.cfg
+git clone https://github.com/jhpoelen/exitnode /opt/exitnode
+cp -r /opt/exitnode/src/etc/* /etc/
+cp /opt/exitnode/l2tp_broker.cfg $TUNNELDIGGER_HOME/broker/l2tp_broker.cfg
 
 # Setup public ip in tunneldigger.cfg
-CFG="/opt/tunneldigger/broker/l2tp_broker.cfg"
-# This following like doesn't seem to be working!
+CFG="$TUNNELDIGGER_HOME/broker/l2tp_broker.cfg"
+
 sed -i.bak "s#address=[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+#address=$PUBLIC_IP#" $CFG
 sed -i.bak "s#interface=lo#interface=$ETH_IF#" $CFG 
 
