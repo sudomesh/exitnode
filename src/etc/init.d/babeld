@@ -46,7 +46,7 @@ do_start()
 	start-stop-daemon --start --quiet --pidfile $PIDFILE --exec $DAEMON --test > /dev/null \
 		|| return 1
 	start-stop-daemon --start --quiet --pidfile $PIDFILE --exec $DAEMON -- \
-		-D -I $PIDFILE -F \
+		-D -I $PIDFILE $DAEMON_ARGS \
 		|| return 2
 	# Wait for the daemon to be ready
         sleep 1
