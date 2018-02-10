@@ -104,9 +104,8 @@ MESHNET=$MESHNET
 
 # make sure that default route has static protocol for babeld to work
 # see https://github.com/jech/babeld/blob/1a6135dca042f0f22dc450699a900e3ca7bc06ca/README#L88
-DEFAULT_ROUTE=$(ip route | head -n1 | sed 's/proto onlink/proto static/g')
-
-EOL
+DEFAULT_ROUTE=$(ip route | head -n1 | sed 's/onlink/proto static/g')
+EOF
 
 git clone https://github.com/jhpoelen/exitnode /opt/exitnode
 cp -r /opt/exitnode/src/etc/* /etc/
