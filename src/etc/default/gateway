@@ -1,4 +1,0 @@
-# gateway initscript
-# sourced by /etc/init.d/gateway
-
-MESHNET=100.64.0.0/10

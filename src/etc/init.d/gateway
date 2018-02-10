@@ -44,7 +44,8 @@ do_start()
 
   # make sure that protocol is status to make babeld distribute gateway route
   # see https://github.com/jech/babeld/blob/1a6135dca042f0f22dc450699a900e3ca7bc06ca/README#L88
-  ip route change default via $GATEWAY_IP dev eth0 proto static
+  ip route change $DEFAULT_ROUTE 
+
 
   iptables -t nat -I POSTROUTING -s $MESHNET ! -d $MESHNET -j MASQUERADE
 
