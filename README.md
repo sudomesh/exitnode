@@ -95,5 +95,60 @@ PING 100.64.0.42 (100.64.0.42) from 100.65.26.1 l2tp0: 56(84) bytes of data.
 
 If you can ping the broker via the tunnel interface, tunneldigger is doing it's job.
 
+## Testing Routing with Babeld Through Tunnel Digger
+
+This assumes that you have an active and functioning tunnel on interface l2tp0 with ip 100.65.26.1 .
+
+Now that we have a functioning tunnel, we can test babeld routing as follows:
+
+1. install and build babeld using https://github.com/sudomesh/babeld
+Please follow install instructions on said repository. Make sure you remove an existing babeld before installing this one.
+
+2. start babeld on l2tp0 
+Execute ```sudo babeld l2tp0```
+
+3. check routes
+After running ```ip route``` you should see entries like:
+
+```
+100.64.0.42 via 100.64.0.42 dev l2tp0  proto babel onlink 
+```
+
+4. ping the mesh routing ip
+Now, execute ```ping 100.64.0.42``` and you should see something like:
+
+```
+$ ping 100.64.0.42
+PING 100.64.0.42 (100.64.0.42) 56(84) bytes of data.
+64 bytes from 100.64.0.42: icmp_seq=1 ttl=64 time=207 ms
+64 bytes from 100.64.0.42: icmp_seq=2 ttl=64 time=204 ms
+```
+
+5. now, stop the babeld process using ctrl-c
+
+6. repeat steps 3/4 and confirm that the routes are gone and the ping no longer succeeds.
+
+PS If you'd like to see the traffic in the tunnel, you can run ```sudo tcpdump -i l2tp0``` . When running the ping, you should see ICMP ECHO messages and babeld "hello" and "hello ihu" (ihu = I hear you).
+
+7. route to internet
+
+Add a route for 8.8.8.8 via mesh router using ```sudo ip r add 8.8.8.8 dev l2tp0```.
+
+Now, when pinging ```ping 8.8.8.8``` you should see the traffic going through the tunnel. As seen from the broker/server : 
+
+```
+04:12:49.900483 IP google-public-dns-a.google.com > 100.65.26.1: ICMP echo reply, id 2324, seq 49, length 64
+04:12:50.777621 IP6 fe80::fc16:44ff:fe04:e0eb.6696 > ff02::1:6.6696: babel 2 (24) hello ihu
+04:12:50.891593 IP 100.65.26.1 > google-public-dns-a.google.com: ICMP echo request, id 2324, seq 50, length 64
+04:12:50.891873 IP google-public-dns-a.google.com > 100.65.26.1: ICMP echo reply, id 2324, seq 50, length 64
+04:12:51.154965 IP6 fe80::9007:afff:fe6a:aa9.6696 > ff02::1:6.6696: babel 2 (24) hello ihu
+04:12:54.767561 IP6 fe80::fc16:44ff:fe04:e0eb.6696 > ff02::1:6.6696: babel 2 (44) hello nh router-id update
+04:12:55.697947 IP6 fe80::9007:afff:fe6a:aa9.6696 > ff02::1:6.6696: babel 2 (8) hello
+04:12:58.646455 IP6 fe80::fc16:44ff:fe04:e0eb.6696 > ff02::1:6.6696: babel 2 (8) hello
+04:12:59.443288 IP6 fe80::9007:afff:fe6a:aa9.6696 > ff02::1:6.6696: babel 2 (8) hello
+04:13:02.167520 IP6 fe80::fc16:44ff:fe04:e0eb.6696 > ff02::1:6.6696: babel 2 (24) hello ihu
+04:13:03.402486 IP6 fe80::9007:afff:fe6a:aa9.6696 > ff02::1:6.6696: babel 2 (156) hello ihu router-id update/prefix update/prefix nh update update up
+```
+
 
 
