@@ -11,7 +11,6 @@
 
 # Do NOT "set -e"
 
-MESHNET=100.64.0.0/10
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 DESC="Sudomesh gateway startup"
 NAME=sudomesh-gateway
@@ -42,6 +41,10 @@ do_start()
 	#   2 if daemon could not be started
 	
   echo 1 > /proc/sys/net/ipv4/ip_forward
+
+  # make sure that protocol is status to make babeld distribute gateway route
+  # see https://github.com/jech/babeld/blob/1a6135dca042f0f22dc450699a900e3ca7bc06ca/README#L88
+  ip route change default via $GATEWAY_IP dev eth0 proto static
 
   iptables -t nat -I POSTROUTING -s $MESHNET ! -d $MESHNET -j MASQUERADE
 
