@@ -105,7 +105,7 @@ Now that we have a functioning tunnel, we can test babeld routing as follows:
 Please follow install instructions on said repository. Make sure you remove an existing babeld before installing this one.
 
 2. start babeld on l2tp0 
-Execute ```sudo babeld l2tp0```
+Execute ```sudo babeld l2tp0``` and keep running in a separate window.
 
 3. check routes
 After running ```ip route``` you should see entries like:
@@ -132,7 +132,7 @@ PS If you'd like to see the traffic in the tunnel, you can run ```sudo tcpdump -
 
 7. route to internet
 
-Add a route for 8.8.8.8 via mesh router using ```sudo ip r add 8.8.8.8 dev l2tp0```.
+After restarting babeld (step 2), add a route for 8.8.8.8 via mesh router using ```sudo ip r add 8.8.8.8 dev l2tp0```.
 
 Now, when pinging ```ping 8.8.8.8``` you should see the traffic going through the tunnel. As seen from the broker/server : 
 
