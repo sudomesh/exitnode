@@ -41,8 +41,6 @@ Executing /lib/systemd/systemd-sysv-install enable babeld
 
 # Testing
 
-TODO outlines procedures on how to check whether the exit node is functioning properly. 
-
 ## Testing Tunnel Digger
 
 In order to check whether a client can establish a functioning tunnel using tunneldigger, assign an ip address to the l2tp0 interface on the client, and create a static route to the exit node address (default 100.64.0.42).
@@ -97,7 +95,7 @@ If you can ping the broker via the tunnel interface, tunneldigger is doing it's 
 
 ## Testing Routing with Babeld Through Tunnel Digger
 
-This assumes that you have an active and functioning tunnel on interface l2tp0 with ip 100.65.26.1 .
+This assumes that you have an active and functioning tunnel on interface l2tp0 with ip 100.65.26.1 (see previous test).
 
 Now that we have a functioning tunnel, we can test babeld routing as follows:
 
