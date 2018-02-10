@@ -99,20 +99,20 @@ This assumes that you have an active and functioning tunnel on interface l2tp0 w
 
 Now that we have a functioning tunnel, we can test babeld routing as follows:
 
-1. install and build babeld using https://github.com/sudomesh/babeld
+Step 1. install and build babeld using https://github.com/sudomesh/babeld
 Please follow install instructions on said repository. Make sure you remove an existing babeld before installing this one.
 
-2. start babeld on l2tp0 
+Step 2. start babeld on l2tp0 
 Execute ```sudo babeld l2tp0``` and keep running in a separate window.
 
-3. check routes
+Step 3. check routes
 After running ```ip route``` you should see entries like:
 
 ```
 100.64.0.42 via 100.64.0.42 dev l2tp0  proto babel onlink 
 ```
 
-4. ping the mesh routing ip
+Step 4. ping the mesh routing ip
 Now, execute ```ping 100.64.0.42``` and you should see something like:
 
 ```
@@ -122,13 +122,13 @@ PING 100.64.0.42 (100.64.0.42) 56(84) bytes of data.
 64 bytes from 100.64.0.42: icmp_seq=2 ttl=64 time=204 ms
 ```
 
-5. now, stop the babeld process using ctrl-c
+Step 5. now, stop the babeld process using ctrl-c
 
-6. repeat steps 3/4 and confirm that the routes are gone and the ping no longer succeeds.
+Step 6. repeat steps 3/4 and confirm that the routes are gone and the ping no longer succeeds.
 
 PS If you'd like to see the traffic in the tunnel, you can run ```sudo tcpdump -i l2tp0``` . When running the ping, you should see ICMP ECHO messages and babeld "hello" and "hello ihu" (ihu = I hear you).
 
-7. route to internet
+Step 7. route to internet
 
 After restarting babeld (step 2), add a route for 8.8.8.8 via mesh router using ```sudo ip r add 8.8.8.8 dev l2tp0```.
 
