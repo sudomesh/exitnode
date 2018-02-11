@@ -130,7 +130,7 @@ PS If you'd like to see the traffic in the tunnel, you can run ```sudo tcpdump -
 
 Step 7. route to internet
 
-After restarting babeld (step 2), add a route for 8.8.8.8 via mesh router using ```sudo ip r add 8.8.8.8 dev l2tp0```.
+After restarting babeld (step 2), add a route for 8.8.8.8 via mesh router using ```sudo ip r add 8.8.8.8 via 100.64.0.42 dev l2tp0  proto babel onlink```.
 
 Now, when pinging ```ping 8.8.8.8``` you should see the traffic going through the tunnel. As seen from the broker/server : 
 
