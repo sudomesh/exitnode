@@ -148,5 +148,16 @@ Now, when pinging ```ping 8.8.8.8``` you should see the traffic going through th
 04:13:03.402486 IP6 fe80::9007:afff:fe6a:aa9.6696 > ff02::1:6.6696: babel 2 (156) hello ihu router-id update/prefix update/prefix nh update update up
 ```
 
+## Configure Home Node to use exit node 
 
+Now that you tested that the tunnel is working with babeld and able to (statically) route messages to 8.8.8.8 on the "big" internet, you can try and configuring a home node (see https://peoplesopen.net/walkthrough). 
 
+To setup the new exit node, ssh into the home router ```ssh root@172.30.0.1``` after connecting to provide SSID.
+
+Now edit the tunneldigger configuration by:
+
+```vi /etc/config/tunneldigger```
+
+and change the list address from ```list address '45.34.140.42:8942'``` to ```list address '[exit node ip]:8942'```.
+
+Now, execute ```reboot now``` to apply new changes.
