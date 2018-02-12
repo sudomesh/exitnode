@@ -160,4 +160,10 @@ Now edit the tunneldigger configuration by:
 
 and change the list address from ```list address '45.34.140.42:8942'``` to ```list address '[exit node ip]:8942'```.
 
+For some reason, a default route on the home node to the exit node has to be manually added like so -
+
+```ip route add default via 100.64.0.42 dev l2tp0  proto babel onlink table public```. This smells like a bug in which babeld doesn't install default proper default routes. 
+
+
+
 Now, execute ```reboot now``` to apply new changes.
