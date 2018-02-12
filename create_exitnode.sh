@@ -92,6 +92,7 @@ chmod 755 /opt/tunneldigger/broker/scripts/up_hook.sh
 cat >/etc/babeld.conf <<EOF
 redistribute local ip $MESH_IP/$MESH_PREFIX allow
 redistribute local ip 0.0.0.0/0 proto 3 metric 128 allow
+redistribute if $ETH_IF metric 128
 redistribute local ip $PUBLIC_SUBNET proto 0 deny
 redistribute local deny
 EOF
