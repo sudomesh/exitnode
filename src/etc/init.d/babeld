@@ -30,12 +30,6 @@ SCRIPTNAME=/etc/init.d/$NAME
 # Read configuration variable file if it is present
 [ -r /etc/default/$NAME ] && . /etc/default/$NAME
 
-# Exit if there is no interfaces
-if [ -z "$INTERFACES" ]; then
-  echo "$DESC: no interfaces to operate on"
-  exit 0
-fi
-
 # Load the VERBOSE setting and other rcS variables
 . /lib/init/vars.sh
 
@@ -52,7 +46,7 @@ do_start()
 	start-stop-daemon --start --quiet --pidfile $PIDFILE --exec $DAEMON --test > /dev/null \
 		|| return 1
 	start-stop-daemon --start --quiet --pidfile $PIDFILE --exec $DAEMON -- \
-		-D -I $PIDFILE $DAEMON_ARGS $INTERFACES \
+		-D -I $PIDFILE $DAEMON_ARGS \
 		|| return 2
 	# Wait for the daemon to be ready
         sleep 1
