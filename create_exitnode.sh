@@ -74,7 +74,7 @@ pip install netfilter
 pip install virtualenv
 
 TUNNELDIGGER_HOME=/opt/tunneldigger
-git clone https://github.com/jhpoelen/tunneldigger.git $TUNNELDIGGER_HOME
+git clone https://github.com/sudomesh/tunneldigger.git $TUNNELDIGGER_HOME
 virtualenv $TUNNELDIGGER_HOME/broker/env_tunneldigger
 $TUNNELDIGGER_HOME/broker/env_tunneldigger/bin/pip install -r $TUNNELDIGGER_HOME/broker/requirements.txt
 
@@ -108,7 +108,7 @@ MESHNET="$MESHNET"
 DEFAULT_ROUTE="$(ip route | head -n1 | sed 's/onlink/proto static/g')"
 EOF
 
-git clone https://github.com/jhpoelen/exitnode /opt/exitnode
+git clone https://github.com/sudomesh/exitnode /opt/exitnode
 cp -r /opt/exitnode/src/etc/* /etc/
 cp /opt/exitnode/l2tp_broker.cfg $TUNNELDIGGER_HOME/broker/l2tp_broker.cfg
 
