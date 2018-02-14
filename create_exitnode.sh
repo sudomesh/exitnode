@@ -118,7 +118,6 @@ CFG="$TUNNELDIGGER_HOME/broker/l2tp_broker.cfg"
 
 sed -i.bak "s#address=[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+#address=$PUBLIC_IP#" $CFG
 sed -i.bak "s#interface=lo#interface=$ETH_IF#" $CFG 
-sed -i.bak "s#session.up=#session.up=$TUNNELDIGGER_UPHOOK_SCRIPT#" $CFG 
 
 # start babeld and tunnel digger on reboot
 systemctl enable sudomesh-gateway
