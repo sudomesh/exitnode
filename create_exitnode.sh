@@ -78,16 +78,17 @@ git clone https://github.com/sudomesh/tunneldigger.git $TUNNELDIGGER_HOME
 virtualenv $TUNNELDIGGER_HOME/broker/env_tunneldigger
 $TUNNELDIGGER_HOME/broker/env_tunneldigger/bin/pip install -r $TUNNELDIGGER_HOME/broker/requirements.txt
 
-cat > $TUNNELDIGGER_HOME/broker/scripts/up_hook.sh <<EOF
+TUNNELDIGGER_UPHOOK_SCRIPT=$TUNNELDIGGER_HOME/broker/scripts/up_hook.sh
+
+cat >$TUNNELDIGGER_UPHOOK_SCRIPT <<EOF
 #!/bin/sh
-echo "$(date) [td-hook] $*" >> /var/log/tunneldigger.log
 ip link set \$3 up
 ip addr add $MESH_IP/$MESH_PREFIX dev \$3
 ip link set dev \$3 mtu \$4
 babeld -a \$3
 EOF
 
-chmod 755 /opt/tunneldigger/broker/scripts/up_hook.sh
+chmod 755 $TUNNELDIGGER_UPHOOK_SCRIPT 
 
 cat >/etc/babeld.conf <<EOF
 redistribute local ip $MESH_IP/$MESH_PREFIX allow
@@ -117,6 +118,7 @@ CFG="$TUNNELDIGGER_HOME/broker/l2tp_broker.cfg"
 
 sed -i.bak "s#address=[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+#address=$PUBLIC_IP#" $CFG
 sed -i.bak "s#interface=lo#interface=$ETH_IF#" $CFG 
+sed -i.bak "s#session.up=#session.up=$TUNNELDIGGER_UPHOOK_SCRIPT#" $CFG 
 
 # start babeld and tunnel digger on reboot
 systemctl enable sudomesh-gateway
