@@ -79,6 +79,7 @@ virtualenv $TUNNELDIGGER_HOME/broker/env_tunneldigger
 $TUNNELDIGGER_HOME/broker/env_tunneldigger/bin/pip install -r $TUNNELDIGGER_HOME/broker/requirements.txt
 
 TUNNELDIGGER_UPHOOK_SCRIPT=$TUNNELDIGGER_HOME/broker/scripts/up_hook.sh
+TUNNELDIGGER_DOWNHOOK_SCRIPT=$TUNNELDIGGER_HOME/broker/scripts/down_hook.sh
 
 cat >$TUNNELDIGGER_UPHOOK_SCRIPT <<EOF
 #!/bin/sh
@@ -89,6 +90,13 @@ babeld -a \$3
 EOF
 
 chmod 755 $TUNNELDIGGER_UPHOOK_SCRIPT 
+
+cat >$TUNNELDIGGER_DOWNHOOK_SCRIPT <<EOF
+#!/bin/sh
+babeld -x \$3
+EOF
+
+chmod 755 $TUNNELDIGGER_DOWNHOOK_SCRIPT 
 
 cat >/etc/babeld.conf <<EOF
 redistribute local ip $MESH_IP/$MESH_PREFIX allow
