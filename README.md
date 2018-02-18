@@ -161,3 +161,32 @@ Now edit the tunneldigger configuration by:
 and change the list address from ```list address '45.34.140.42:8942'``` to ```list address '[exit node ip]:8942'```.
 
 Now, execute ```reboot now``` to apply new changes.
+
+## Test Domain Name Service (DNS)
+
+To test DNS, connect to your home node using a laptop on the peoplesopen.net SSID . Now, on the commandline, execute something like ```dig @[ip of exit node] sudoroom.org``` to check whether the domain name resolution (DNS) work. DNS translates domain names into ip addresses. 
+
+
+```
+$ dig @100.64.0.42 sudoroom.org
+
+; <<>> DiG 9.9.5-9+deb8u15-Debian <<>> @100.64.0.42 sudoroom.org
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 39878
+;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 512
+;; QUESTION SECTION:
+;sudoroom.org.          IN  A
+
+;; ANSWER SECTION:
+sudoroom.org.       2216    IN  A   104.236.181.202
+
+;; Query time: 25 msec
+;; SERVER: 100.64.0.42#53(100.64.0.42)
+;; WHEN: Sat Feb 17 21:15:57 EST 2018
+;; MSG SIZE  rcvd: 57
+```
