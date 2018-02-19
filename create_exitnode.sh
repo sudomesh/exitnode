@@ -127,6 +127,12 @@ CFG="$TUNNELDIGGER_HOME/broker/l2tp_broker.cfg"
 sed -i.bak "s#address=[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+#address=$PUBLIC_IP#" $CFG
 sed -i.bak "s#interface=lo#interface=$ETH_IF#" $CFG 
 
+# for Digital Ocean only
+sed -i 's/dns-nameservers.*/dns-nameservers 8.8.8.8/g' /etc/network/interfaces.d/50-cloud-init.cfg
+sed -i '/address/a \   \ dns-nameservers 8.8.8.8' /etc/network/interfaces.d/50-cloud-init.cfg 
+
+
+
 # start babeld and tunnel digger on reboot
 systemctl enable sudomesh-gateway
 systemctl enable tunneldigger
