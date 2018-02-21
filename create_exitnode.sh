@@ -131,8 +131,7 @@ sed -i.bak "s#interface=lo#interface=$ETH_IF#" $CFG
 sed -i 's/dns-nameservers.*/dns-nameservers 8.8.8.8/g' /etc/network/interfaces.d/50-cloud-init.cfg
 sed -i '/address/a \   \ dns-nameservers 8.8.8.8' /etc/network/interfaces.d/50-cloud-init.cfg 
 
-# ensure to enable ipv4 ip forwarding
-echo "1" > /proc/sys/net/ipv4/ip_forward
+
 
 # start babeld and tunnel digger on reboot
 systemctl enable sudomesh-gateway
