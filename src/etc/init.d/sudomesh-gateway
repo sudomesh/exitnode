@@ -41,7 +41,7 @@ do_start()
 	#   2 if daemon could not be started
 	
   echo 1 > /proc/sys/net/ipv4/ip_forward
-i sed -i.backup 's/\(.*net.ipv4.ip_forward.*\)/# Enable forwarding for mesh (altered by provisioning script)\nnet.ipv4.ip_forward=1/' /etc/sysctl.conf
+  sed -i.backup 's/\(.*net.ipv4.ip_forward.*\)/# Enable forwarding for mesh (altered by provisioning script)\nnet.ipv4.ip_forward=1/' /etc/sysctl.conf
 
   # make sure that protocol is status to make babeld distribute gateway route
   # see https://github.com/jech/babeld/blob/1a6135dca042f0f22dc450699a900e3ca7bc06ca/README#L88
