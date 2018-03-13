@@ -10,6 +10,8 @@ ETH_IF=eth0
 PUBLIC_IP=$IP
 PUBLIC_SUBNET="$IP/29"
 
+# see https://www.digitalocean.com/community/questions/problem-with-user-data-during-created-droplet
+DEBIAN_FRONTEND=noninteractive;
 
 apt-get update && apt-get install -y --force-yes \
   build-essential \
