@@ -10,10 +10,7 @@ ETH_IF=eth0
 PUBLIC_IP=$IP
 PUBLIC_SUBNET="$IP/29"
 
-# see https://www.digitalocean.com/community/questions/problem-with-user-data-during-created-droplet
-DEBIAN_FRONTEND=noninteractive;
-
-apt-get update && apt-get install -y --force-yes \
+DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -yq --force-yes \
   build-essential \
   ca-certificates \
   curl \
@@ -43,7 +40,7 @@ apt-get update && apt-get install -y --force-yes \
 KERNEL_VERSION=$(uname -r)
 echo kernel version [$KERNEL_VERSION]
 
-apt-get install -y --force-yes \
+DEBIAN_FRONTEND=noninteractive apt-get install -yq --force-yes \
   cmake \
   libnl-3-dev \
   libnl-genl-3-dev \
