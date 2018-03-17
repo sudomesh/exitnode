@@ -27,7 +27,7 @@ if [ "$release_name" == '"Ubuntu"' ]; then
     linux-image-extra-$(uname -r)
 fi 
 
-apt-get install -yq \
+DEBIAN_FRONTEND=noninteractive apt-get install -yq --force-yes \
   build-essential \
   ca-certificates \
   curl \
@@ -55,7 +55,8 @@ apt-get install -yq \
   vim \
   tmux
 
-apt-get install -yq \
+
+DEBIAN_FRONTEND=noninteractive apt-get install -yq --force-yes \
   cmake \
   libnl-3-dev \
   libnl-genl-3-dev \
