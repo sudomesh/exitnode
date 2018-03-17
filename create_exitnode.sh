@@ -44,7 +44,6 @@ apt-get install -yq \
   dnsmasq \
   procps \
   python-psycopg2 \
-  python-software-properties \
   software-properties-common \
   python \
   python-dev \
