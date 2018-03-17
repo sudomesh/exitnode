@@ -42,18 +42,24 @@ DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -yq --force-yes
   libnfnetlink-dev \
   libffi-dev \
   libevent-dev \
-  tmux
-
-KERNEL_VERSION=$(uname -r)
-echo kernel version [$KERNEL_VERSION]
-
-DEBIAN_FRONTEND=noninteractive apt-get install -yq --force-yes \
+  tmux \
   cmake \
   libnl-3-dev \
   libnl-genl-3-dev \
   build-essential \
-  pkg-config \
-  linux-image-extra-$(uname -r)
+  pkg-config
+
+KERNEL_VERSION=$(uname -r)
+echo kernel version [$KERNEL_VERSION]
+
+release_info="$(cat /etc/*-release)"
+echo "release_info=$release_info"
+release_name="$(echo $release_info | cut -d'=' -f2)"
+
+if [ $release_name == '"Ubuntu"' ]; then
+  DEBIAN_FRONTEND=noninteractive apt-get install -yq --force-yes \
+    linux-image-extra-$(uname -r)
+fi 
 
 mkdir ~/babel_build
 git clone https://github.com/sudomesh/babeld.git ~/babel_build/
