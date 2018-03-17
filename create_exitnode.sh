@@ -11,7 +11,8 @@ PUBLIC_IP=$IP
 PUBLIC_SUBNET="$IP/29"
 
 EXITNODE_REPO=jhpoelen/exitnode
-TUNNELDIGGER_REPO=jhpoelen/tunneldigger
+TUNNELDIGGER_REPO=wlanslovenija/tunneldigger
+TUNNELDIGGER_COMMIT=210037aabf8538a0a272661e08ea142784b42b2c
 
 DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -yq --force-yes \
   build-essential \
@@ -80,8 +81,9 @@ pip install virtualenv
 
 TUNNELDIGGER_HOME=/opt/tunneldigger
 git clone https://github.com/${TUNNELDIGGER_REPO} $TUNNELDIGGER_HOME
-virtualenv $TUNNELDIGGER_HOME/broker/env_tunneldigger
 cd $TUNNELDIGGER_HOME
+git checkout $TUNNELDIGGER_COMMIT
+virtualenv $TUNNELDIGGER_HOME/broker/env_tunneldigger
 source broker/env_tunneldigger/bin/activate
 cd broker
 python setup.py install
