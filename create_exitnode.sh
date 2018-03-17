@@ -18,7 +18,6 @@ DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -yq --force-yes
   libssl-dev \
   libxslt1-dev \
   module-init-tools \
-  bridge-utils \
   openssh-server \
   openssl \
   perl \
@@ -30,11 +29,15 @@ DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -yq --force-yes
   python \
   python-dev \
   python-pip \
-  iproute \
   libnetfilter-conntrack3 \
-  libevent-dev \
   ebtables \
   vim \
+  iproute \
+  bridge-utils \
+  libnetfilter-conntrack-dev \
+  libnfnetlink-dev \
+  libffi-dev \
+  libevent-dev \
   tmux
 
 KERNEL_VERSION=$(uname -r)
@@ -73,9 +76,12 @@ pip install netfilter
 pip install virtualenv
 
 TUNNELDIGGER_HOME=/opt/tunneldigger
-git clone https://github.com/sudomesh/tunneldigger.git $TUNNELDIGGER_HOME
+git clone https://github.com/jhpoelen/tunneldigger.git $TUNNELDIGGER_HOME
 virtualenv $TUNNELDIGGER_HOME/broker/env_tunneldigger
-$TUNNELDIGGER_HOME/broker/env_tunneldigger/bin/pip install -r $TUNNELDIGGER_HOME/broker/requirements.txt
+cd $TUNNELDIGGER_HOME
+source broker/env_tunneldigger/bin/activate
+cd broker
+python setup.py install
 
 TUNNELDIGGER_UPHOOK_SCRIPT=$TUNNELDIGGER_HOME/broker/scripts/up_hook.sh
 TUNNELDIGGER_DOWNHOOK_SCRIPT=$TUNNELDIGGER_HOME/broker/scripts/down_hook.sh
