@@ -20,8 +20,8 @@ echo kernel version [$KERNEL_VERSION]
 
 release_info="$(cat /etc/*-release)"
 echo "release_info=$release_info"
-release_name="$(echo $release_info | cut -d'=' -f2)"
-
+release_name="$(echo "$release_info" | grep ^NAME= | cut -d'=' -f2)"
+echo "release_name=[$release_name]"
 DEBIAN_FRONTEND=noninteractive apt-get update
 
 if [ "$release_name" == '"Ubuntu"' ]; then
