@@ -53,8 +53,13 @@ DEBIAN_FRONTEND=noninteractive apt-get install -yq --force-yes \
   libevent-dev \
   ebtables \
   vim \
+  iproute \
+  bridge-utils \
+  libnetfilter-conntrack-dev \
+  libnfnetlink-dev \
+  libffi-dev \
+  libevent-dev \
   tmux
-
 
 DEBIAN_FRONTEND=noninteractive apt-get install -yq --force-yes \
   cmake \
