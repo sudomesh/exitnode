@@ -22,6 +22,8 @@ release_info="$(cat /etc/*-release)"
 echo "release_info=$release_info"
 release_name="$(echo $release_info | cut -d'=' -f2)"
 
+DEBIAN_FRONTEND=noninteractive apt-get update
+
 if [ "$release_name" == '"Ubuntu"' ]; then
   DEBIAN_FRONTEND=noninteractive apt-get install -yq --force-yes \
     linux-image-extra-$(uname -r)
