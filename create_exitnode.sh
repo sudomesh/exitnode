@@ -36,7 +36,7 @@ DEBIAN_FRONTEND=noninteractive apt-get install -yq --force-yes \
   zlib1g-dev \
   libssl-dev \
   libxslt1-dev \
-  module-init-tools \
+  kmod \
   bridge-utils \
   openssh-server \
   openssl \
