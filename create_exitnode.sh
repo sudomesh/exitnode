@@ -14,14 +14,30 @@ EXITNODE_REPO=jhpoelen/exitnode
 TUNNELDIGGER_REPO=wlanslovenija/tunneldigger
 TUNNELDIGGER_COMMIT=210037aabf8538a0a272661e08ea142784b42b2c
 
-DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -yq --force-yes \
+
+KERNEL_VERSION=$(uname -r)
+echo kernel version [$KERNEL_VERSION]
+
+release_info="$(cat /etc/*-release)"
+echo "release_info=$release_info"
+release_name="$(echo $release_info | cut -d'=' -f2)"
+
+if [ "$release_name" == '"Ubuntu"' ]; then
+  DEBIAN_FRONTEND=noninteractive apt-get install -yq --force-yes \
+    linux-image-extra-$(uname -r)
+fi 
+
+apt-get install -yq \
   build-essential \
   ca-certificates \
   curl \
   git \
+  zlib1g \
+  zlib1g-dev \
   libssl-dev \
   libxslt1-dev \
   module-init-tools \
+  bridge-utils \
   openssh-server \
   openssl \
   perl \
@@ -33,33 +49,19 @@ DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -yq --force-yes
   python \
   python-dev \
   python-pip \
+  iproute \
   libnetfilter-conntrack3 \
+  libevent-dev \
   ebtables \
   vim \
-  iproute \
-  bridge-utils \
-  libnetfilter-conntrack-dev \
-  libnfnetlink-dev \
-  libffi-dev \
-  libevent-dev \
-  tmux \
+  tmux
+
+apt-get install -yq \
   cmake \
   libnl-3-dev \
   libnl-genl-3-dev \
   build-essential \
   pkg-config
-
-KERNEL_VERSION=$(uname -r)
-echo kernel version [$KERNEL_VERSION]
-
-release_info="$(cat /etc/*-release)"
-echo "release_info=$release_info"
-release_name="$(echo $release_info | cut -d'=' -f2)"
-
-if [ $release_name == '"Ubuntu"' ]; then
-  DEBIAN_FRONTEND=noninteractive apt-get install -yq --force-yes \
-    linux-image-extra-$(uname -r)
-fi 
 
 mkdir ~/babel_build
 git clone https://github.com/sudomesh/babeld.git ~/babel_build/
