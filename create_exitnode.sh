@@ -10,14 +10,35 @@ ETH_IF=eth0
 PUBLIC_IP=$IP
 PUBLIC_SUBNET="$IP/29"
 
-DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -yq --force-yes \
+EXITNODE_REPO=jhpoelen/exitnode
+TUNNELDIGGER_REPO=wlanslovenija/tunneldigger
+TUNNELDIGGER_COMMIT=210037aabf8538a0a272661e08ea142784b42b2c
+
+
+KERNEL_VERSION=$(uname -r)
+echo kernel version [$KERNEL_VERSION]
+
+release_info="$(cat /etc/*-release)"
+echo "release_info=$release_info"
+release_name="$(echo "$release_info" | grep ^NAME= | cut -d'=' -f2)"
+echo "release_name=[$release_name]"
+DEBIAN_FRONTEND=noninteractive apt-get update
+
+if [ "$release_name" == '"Ubuntu"' ]; then
+  DEBIAN_FRONTEND=noninteractive apt-get install -yq --force-yes \
+    linux-image-extra-$(uname -r)
+fi 
+
+DEBIAN_FRONTEND=noninteractive apt-get install -yq --force-yes \
   build-essential \
   ca-certificates \
   curl \
   git \
+  zlib1g \
+  zlib1g-dev \
   libssl-dev \
   libxslt1-dev \
-  module-init-tools \
+  kmod \
   bridge-utils \
   openssh-server \
   openssl \
@@ -25,7 +46,6 @@ DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -yq --force-yes
   dnsmasq \
   procps \
   python-psycopg2 \
-  python-software-properties \
   software-properties-common \
   python \
   python-dev \
@@ -35,18 +55,20 @@ DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -yq --force-yes
   libevent-dev \
   ebtables \
   vim \
+  iproute \
+  bridge-utils \
+  libnetfilter-conntrack-dev \
+  libnfnetlink-dev \
+  libffi-dev \
+  libevent-dev \
   tmux
-
-KERNEL_VERSION=$(uname -r)
-echo kernel version [$KERNEL_VERSION]
 
 DEBIAN_FRONTEND=noninteractive apt-get install -yq --force-yes \
   cmake \
   libnl-3-dev \
   libnl-genl-3-dev \
   build-essential \
-  pkg-config \
-  linux-image-extra-$(uname -r)
+  pkg-config
 
 mkdir ~/babel_build
 git clone https://github.com/sudomesh/babeld.git ~/babel_build/
@@ -73,9 +95,13 @@ pip install netfilter
 pip install virtualenv
 
 TUNNELDIGGER_HOME=/opt/tunneldigger
-git clone https://github.com/sudomesh/tunneldigger.git $TUNNELDIGGER_HOME
+git clone https://github.com/${TUNNELDIGGER_REPO} $TUNNELDIGGER_HOME
+cd $TUNNELDIGGER_HOME
+git checkout $TUNNELDIGGER_COMMIT
 virtualenv $TUNNELDIGGER_HOME/broker/env_tunneldigger
-$TUNNELDIGGER_HOME/broker/env_tunneldigger/bin/pip install -r $TUNNELDIGGER_HOME/broker/requirements.txt
+source broker/env_tunneldigger/bin/activate
+cd broker
+python setup.py install
 
 TUNNELDIGGER_UPHOOK_SCRIPT=$TUNNELDIGGER_HOME/broker/scripts/up_hook.sh
 TUNNELDIGGER_DOWNHOOK_SCRIPT=$TUNNELDIGGER_HOME/broker/scripts/down_hook.sh
@@ -116,7 +142,7 @@ MESHNET="$MESHNET"
 DEFAULT_ROUTE="$(ip route | head -n1 | sed 's/onlink/proto static/g')"
 EOF
 
-git clone https://github.com/sudomesh/exitnode /opt/exitnode
+git clone https://github.com/${EXITNODE_REPO} /opt/exitnode
 cp -r /opt/exitnode/src/etc/* /etc/
 cp /opt/exitnode/l2tp_broker.cfg $TUNNELDIGGER_HOME/broker/l2tp_broker.cfg
 
