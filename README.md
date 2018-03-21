@@ -40,10 +40,11 @@ Executing /lib/systemd/systemd-sysv-install enable babeld
 ```
 
 ## Configure Home Node to use exit node 
+This section assumes you have a working home node. Here's a walkthrough for how to set one up: https://peoplesopen.net/walkthrough.
 
-Now that you tested that the tunnel is working with babeld and able to (statically) route messages to 8.8.8.8 on the "big" internet, you can try and configuring a home node (see https://peoplesopen.net/walkthrough). 
+Connect to your node's private SSID, and ssh in:
 
-To setup the new exit node, ssh into the home router ```ssh root@172.30.0.1``` after connecting to provide SSID.
+```ssh root@172.30.0.1```
 
 Now edit the tunneldigger configuration by:
 
@@ -51,7 +52,7 @@ Now edit the tunneldigger configuration by:
 
 and change the list address from ```list address '45.34.140.42:8942'``` to ```list address '[exit node ip]:8942'```.
 
-Now, execute ```reboot now``` to apply new changes.
+Now, execute ```/etc/init.d/tunneldigger restart``` to apply new changes.
 
 ### Troubleshooting Tunneldigger
 
