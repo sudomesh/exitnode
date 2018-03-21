@@ -162,6 +162,40 @@ and change the list address from ```list address '45.34.140.42:8942'``` to ```li
 
 Now, execute ```reboot now``` to apply new changes.
 
+### Troubleshooting Tunneldigger
+
+If you don't see an l2tp interface on your home node, it might be having issues digging a tunnel. There might be some clues in the tunneldigger logs. This is an active area of debugging, related to https://github.com/sudomesh/bugs/issues/8.
+
+On the home node:
+
+```
+cat /var/log/messages
+```
+
+The tunneldigger client prefixes its logs with "td-client":
+
+```
+cat /var/log/messages | grep td-client
+```
+
+It might look something like this:
+
+```
+td-client: Performing broker selection...
+td-client: Broker usage of [exitnode-ip]:8942: 127
+td-client: Selected [exitnode-ip]:8942 as the best broker.
+td-client: Tunnel successfully established.
+td-client: Setting MTU to 1446
+```
+
+On the exit node:
+
+```
+sudo journalctl -u tunneldigger
+```
+
+TODO: Show some healthy log examples here.
+
 ## Test Domain Name Service (DNS)
 
 To test DNS, connect to your home node using a laptop on the peoplesopen.net SSID . Now, on the commandline, execute something like ```dig @[ip of exit node] sudoroom.org``` to check whether the domain name resolution (DNS) work. DNS translates domain names into ip addresses. 
