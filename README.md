@@ -39,6 +39,54 @@ babeld.service is not a native service, redirecting to systemd-sysv-install
 Executing /lib/systemd/systemd-sysv-install enable babeld
 ```
 
+## Configure Home Node to use exit node 
+
+Now that you tested that the tunnel is working with babeld and able to (statically) route messages to 8.8.8.8 on the "big" internet, you can try and configuring a home node (see https://peoplesopen.net/walkthrough). 
+
+To setup the new exit node, ssh into the home router ```ssh root@172.30.0.1``` after connecting to provide SSID.
+
+Now edit the tunneldigger configuration by:
+
+```vi /etc/config/tunneldigger```
+
+and change the list address from ```list address '45.34.140.42:8942'``` to ```list address '[exit node ip]:8942'```.
+
+Now, execute ```reboot now``` to apply new changes.
+
+### Troubleshooting Tunneldigger
+
+If you don't see an l2tp interface on your home node, it might be having issues digging a tunnel. There might be some clues in the tunneldigger logs. This is an active area of debugging, related to https://github.com/sudomesh/bugs/issues/8.
+
+On the home node:
+
+```
+cat /var/log/messages
+```
+
+The tunneldigger client prefixes its logs with "td-client":
+
+```
+cat /var/log/messages | grep td-client
+```
+
+It might look something like this:
+
+```
+td-client: Performing broker selection...
+td-client: Broker usage of [exitnode-ip]:8942: 127
+td-client: Selected [exitnode-ip]:8942 as the best broker.
+td-client: Tunnel successfully established.
+td-client: Setting MTU to 1446
+```
+
+On the exit node:
+
+```
+sudo journalctl -u tunneldigger
+```
+
+TODO: Show some healthy log examples here.
+
 # Testing
 
 ## Testing Tunnel Digger
@@ -147,54 +195,6 @@ Now, when pinging ```ping 8.8.8.8``` you should see the traffic going through th
 04:13:02.167520 IP6 fe80::fc16:44ff:fe04:e0eb.6696 > ff02::1:6.6696: babel 2 (24) hello ihu
 04:13:03.402486 IP6 fe80::9007:afff:fe6a:aa9.6696 > ff02::1:6.6696: babel 2 (156) hello ihu router-id update/prefix update/prefix nh update update up
 ```
-
-## Configure Home Node to use exit node 
-
-Now that you tested that the tunnel is working with babeld and able to (statically) route messages to 8.8.8.8 on the "big" internet, you can try and configuring a home node (see https://peoplesopen.net/walkthrough). 
-
-To setup the new exit node, ssh into the home router ```ssh root@172.30.0.1``` after connecting to provide SSID.
-
-Now edit the tunneldigger configuration by:
-
-```vi /etc/config/tunneldigger```
-
-and change the list address from ```list address '45.34.140.42:8942'``` to ```list address '[exit node ip]:8942'```.
-
-Now, execute ```reboot now``` to apply new changes.
-
-### Troubleshooting Tunneldigger
-
-If you don't see an l2tp interface on your home node, it might be having issues digging a tunnel. There might be some clues in the tunneldigger logs. This is an active area of debugging, related to https://github.com/sudomesh/bugs/issues/8.
-
-On the home node:
-
-```
-cat /var/log/messages
-```
-
-The tunneldigger client prefixes its logs with "td-client":
-
-```
-cat /var/log/messages | grep td-client
-```
-
-It might look something like this:
-
-```
-td-client: Performing broker selection...
-td-client: Broker usage of [exitnode-ip]:8942: 127
-td-client: Selected [exitnode-ip]:8942 as the best broker.
-td-client: Tunnel successfully established.
-td-client: Setting MTU to 1446
-```
-
-On the exit node:
-
-```
-sudo journalctl -u tunneldigger
-```
-
-TODO: Show some healthy log examples here.
 
 ## Test Domain Name Service (DNS)
 
