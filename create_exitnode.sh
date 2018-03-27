@@ -144,6 +144,7 @@ EOF
 
 git clone https://github.com/${EXITNODE_REPO} /opt/exitnode
 cp -r /opt/exitnode/src/etc/* /etc/
+mkdir -p /var/lib/babeld
 cp /opt/exitnode/l2tp_broker.cfg $TUNNELDIGGER_HOME/broker/l2tp_broker.cfg
 
 # Setup public ip in tunneldigger.cfg
