@@ -1,0 +1,12 @@
+[Unit]
+Description=babeld
+After=network.target auditd.service tunneldigger.service
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/babeld -F -S /var/lib/babeld/state -c /etc/babeld.conf
+KillMode=process
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
