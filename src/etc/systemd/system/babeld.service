@@ -1,6 +1,6 @@
 [Unit]
 Description=babeld
-After=network.target auditd.service tunneldigger.service
+After=network.target auditd.service
 
 [Service]
 Type=simple
