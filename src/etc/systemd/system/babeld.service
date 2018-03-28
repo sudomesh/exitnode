@@ -1,5 +1,5 @@
 [Unit]
-Description=babeld for mesh routing
+Description=babeld
 After=network.target auditd.service
 
 [Service]

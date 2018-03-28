@@ -1,8 +1,0 @@
-# Defaults for babeld initscript
-# sourced by /etc/init.d/babeld
-
-# List of interfaces on which the protocol should operate
-# INTERFACES="l2tp_holder"
-
-# Additional arguments
-DAEMON_ARGS="-S /var/lib/babeld-state -c /etc/babeld.conf -F"
