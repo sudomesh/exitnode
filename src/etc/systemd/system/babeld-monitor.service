@@ -2,13 +2,12 @@
 Description=babeld-monitor
 After=network.target auditd.service
 
-[Timer]
-OnCalendar=*:0/10
-
 [Service]
 Type=simple
+Nice=19
+IOSchedulingClass=2
+IOSchedulingPriority=7
 ExecStart=/opt/babeld-monitor/babeld-monitor.sh 
 
 [Install]
-WantedBy=timers.target
-
+WantedBy=multi-user.target

@@ -162,11 +162,12 @@ sed -i '/address/a \   \ dns-nameservers 8.8.8.8' /etc/network/interfaces.d/50-c
 systemctl enable sudomesh-gateway
 systemctl enable tunneldigger
 systemctl enable babeld
-systemctl enable babeld-monitor
 
 service sudomesh-gateway start
 service tunneldigger start
 service babeld start
-service babeld-monitor start
+
+systemctl start babeld-monitor.timer
+systemctl enable babeld-monitor.timer
 
 reboot now
