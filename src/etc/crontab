@@ -1,3 +1,0 @@
-# m h dom mon dow user  command
-3 *    * * *   root    /etc/squid3/dnscheck.py
-
