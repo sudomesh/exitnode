@@ -144,6 +144,7 @@ EOF
 
 git clone https://github.com/${EXITNODE_REPO} /opt/exitnode
 cp -r /opt/exitnode/src/etc/* /etc/
+cp -r /opt/exitnode/src/opt/* /opt/
 mkdir -p /var/lib/babeld
 cp /opt/exitnode/l2tp_broker.cfg $TUNNELDIGGER_HOME/broker/l2tp_broker.cfg
 
@@ -157,15 +158,15 @@ sed -i.bak "s#interface=lo#interface=$ETH_IF#" $CFG
 sed -i 's/dns-nameservers.*/dns-nameservers 8.8.8.8/g' /etc/network/interfaces.d/50-cloud-init.cfg
 sed -i '/address/a \   \ dns-nameservers 8.8.8.8' /etc/network/interfaces.d/50-cloud-init.cfg 
 
-
-
 # start babeld and tunnel digger on reboot
 systemctl enable sudomesh-gateway
 systemctl enable tunneldigger
 systemctl enable babeld
+systemctl enable babeld-monitor
 
 service sudomesh-gateway start
 service tunneldigger start
 service babeld start
+service babeld-monitor start
 
 reboot now

@@ -1,0 +1,14 @@
+[Unit]
+Description=babeld-monitor
+After=network.target auditd.service
+
+[Timer]
+OnCalendar=*:0/10
+
+[Service]
+Type=simple
+ExecStart=/opt/babeld-monitor/babeld-monitor.sh 
+
+[Install]
+WantedBy=timers.target
+
