@@ -2,7 +2,26 @@
 # This is a workaround for a suspected (babeld?) memory leak
 # https://github.com/sudomesh/bugs/issues/24
 
-set -e
+
+wait_for_babeld() {
+  local try_count=0
+  local try_max=20
+  local try_sleep=5
+
+  while [ "$try_count" -lt "$try_max" ]; do
+    babeld -i
+    local exit_status=$?
+    if [[ exit_status -eq 0 ]]; then
+      echo "babeld initialized."
+      break;
+    else
+      try_count=`expr $try_count + 1`
+      echo "waiting [$try_sleep]s for babeld to initialize... try [$try_count]"
+      sleep $try_sleep
+    fi
+  done
+}
+
 
 date_last_error=$(sudo journalctl -u babeld -o short-iso | grep "Cannot allocate memory" | tail -n1 | awk '{print $1}')
 
@@ -16,6 +35,9 @@ else
     echo "babeld restarting..."
     service babeld restart
     echo "babeld restarted."
+    
+    wait_for_babeld
+    
     # add tunnel interfaces to babeld
     echo "add tunnel interfaces to babeld..."
     ip addr | tr ' ' '\n' | grep -E "l2tp[0-9]+$" | sort | uniq | xargs -L 1 babeld -a 
