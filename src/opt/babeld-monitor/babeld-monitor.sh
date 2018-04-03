@@ -30,7 +30,7 @@ date_last_started=$(journalctl -u babeld -o short-iso | grep "Started babeld" | 
 if [[ "$date_last_error" == "" || "$date_last_started" == "" ]]; then
     echo "found no [Cannot allocate memory] error entry or babeld is not running"
 else
-  if [ "$date_last_error" > "$date_last_started" ]; then
+  if [[ "$date_last_error" > "$date_last_started" ]]; then
     echo "found [Cannot allocate memory] error since last babeld restart"
     echo "babeld restarting..."
     service babeld restart
