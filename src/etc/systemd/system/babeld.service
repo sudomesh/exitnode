@@ -8,6 +8,7 @@ WorkingDirectory=/usr/local/bin
 ExecStart=/usr/local/bin/babeld -F -S /var/lib/babeld/state -c /etc/babeld.conf
 KillMode=process
 Restart=on-failure
+PIDFile=/var/run/babeld.pid
 
 [Install]
 WantedBy=multi-user.target
