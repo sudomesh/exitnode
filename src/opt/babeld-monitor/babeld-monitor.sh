@@ -33,11 +33,7 @@ else
   if [[ "$date_last_error" > "$date_last_started" ]]; then
     echo "found [Cannot allocate memory] error since last babeld restart"
     echo "babeld restarting..."
-    service babeld stop
-    # sometimes babeld crashed during shutdown (see https://github.com/sudomesh/bugs/issues/21#issuecomment-382610152)
-    # and fails to remove the pid file
-    rm -f /var/run/babeld.pid
-    service babeld start
+    service babeld restart
     echo "babeld restarted."
     
     wait_for_babeld
