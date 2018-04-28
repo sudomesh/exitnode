@@ -39,7 +39,7 @@ else
     
     # add tunnel interfaces to babeld
     echo "add tunnel interfaces to babeld..."
-    ip addr | tr ' ' '\n' | grep -E "l2tp[0-9]+$" | sort | uniq | xargs -L 1 babeld -a 
+    ip addr | tr ' ' '\n' | grep -E "l2tp[0-9\-]+$" | sort | uniq | xargs -L 1 babeld -a 
     babeld -i | head -n1
     echo "add tunnel interfaces to babeld done."
 
