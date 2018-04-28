@@ -23,18 +23,17 @@ wait_for_babeld() {
 }
 
 
-date_last_error=$(journalctl -u babeld -o short-iso | grep "Cannot allocate memory" | tail -n1 | awk '{print $1}')
+date_last_error=$(journalctl -u babeld -o short-iso | grep -E "((Cannot allocate memory)|(Unit entered failed state))" | tail -n1 | awk '{print $1}')
 
-date_last_started=$(journalctl -u babeld -o short-iso | grep "Started babeld" | tail -n1 | awk '{print $1}')
+date_last_restarted=$(journalctl -u babeld-monitor -o short-iso | grep "babeld restarted" | tail -n1 | awk '{print $1}')
 
-if [[ "$date_last_error" == "" || "$date_last_started" == "" ]]; then
-    echo "found no [Cannot allocate memory] error entry or babeld is not running"
+if [[ "$date_last_error" == "" ]]; then
+    echo "found no error entry"
 else
-  if [[ "$date_last_error" > "$date_last_started" ]]; then
-    echo "found [Cannot allocate memory] error since last babeld restart"
+  if [[ "$date_last_restarted" == "" || "$date_last_error" > "$date_last_restarted" ]]; then
+    echo "found error since last babeld restart"
     echo "babeld restarting..."
     service babeld restart
-    echo "babeld restarted."
     
     wait_for_babeld
     
@@ -43,8 +42,10 @@ else
     ip addr | tr ' ' '\n' | grep -E "l2tp[0-9]+$" | sort | uniq | xargs -L 1 babeld -a 
     babeld -i | head -n1
     echo "add tunnel interfaces to babeld done."
+
+    echo "babeld restarted."
   else
-    echo "found no [Cannot allocate memory] error since last babeld restart"
+    echo "found no error since last babeld restart"
   fi
 fi
 
