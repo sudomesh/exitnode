@@ -1,5 +1,8 @@
 #!/bin/sh
 
+set -x
+set -e
+
 IP=$1
 GATEWAY_IP=$2
 
@@ -89,7 +92,8 @@ do
   modprobe $module
 done
 
-pip install --upgrade pip
+# see https://askubuntu.com/questions/561377/pip-wont-run-throws-errors-instead
+easy_install -U pip
 
 pip install netfilter
 pip install virtualenv
