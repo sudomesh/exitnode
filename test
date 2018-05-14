@@ -2,5 +2,5 @@
 
 THIS_DIR="${BASH_SOURCE%/*}"
 
-"$THIS_DIR"/create_exitnode.sh
+systemd-analyze verify "$THIS_DIR/src/etc/systemd/system/tunneldigger.service"
 
