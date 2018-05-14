@@ -3,5 +3,5 @@ sudo: required
 language: bash 
 
 script:
-- ./test
+- sudo ./test
 
