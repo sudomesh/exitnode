@@ -3,7 +3,7 @@
 THIS_DIR="${BASH_SOURCE%/*}"
 
 # Installs systemd-analyze
-apt install -y systemd-services
+apt install -y systemd
 
 systemd-analyze verify "$THIS_DIR/src/etc/systemd/system/tunneldigger.service"
 
