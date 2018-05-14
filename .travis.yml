@@ -3,4 +3,5 @@ sudo: required
 language: javascript
 
 script:
-- true
+- ./test
+
