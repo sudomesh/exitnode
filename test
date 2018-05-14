@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
 
-false
+THIS_DIR="${BASH_SOURCE%/*}"
+
+"$THIS_DIR"/create_exitnode.sh
 
