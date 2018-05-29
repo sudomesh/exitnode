@@ -1,0 +1,13 @@
+[Unit]
+Description=tunneldigger tunnelling network daemon using l2tpv3
+After=network.target auditd.service babeld.service
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/tunneldigger
+ExecStart=/opt/tunneldigger/client/tunneldigger -f -b 64.71.176.94:8942 -u $(uuidgen) -i l2tp0 -s /opt/tunneldigger/client/scripts/up_hook.sh
+KillMode=process
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
