@@ -3,9 +3,9 @@
 set -x
 set -e
 
-EXITNODE_IP=$1
+MESH_IP=$1
+EXITNODE_IP=$2
 
-MESH_IP=100.65.120.129
 MESH_PREFIX=32
 MESHNET=100.64.0.0/10
 ETH_IF=eth0
@@ -95,28 +95,6 @@ cd client
 cmake .
 make
 
-mkdir scripts
-
-TUNNELDIGGER_UPHOOK_SCRIPT=$TUNNELDIGGER_HOME/client/scripts/up_hook.sh
-TUNNELDIGGER_DOWNHOOK_SCRIPT=$TUNNELDIGGER_HOME/client/scripts/down_hook.sh
-
-cat >$TUNNELDIGGER_UPHOOK_SCRIPT <<EOF
-#!/bin/sh
-ip link set $L2TP_IF up
-ip addr add $MESH_IP/$MESH_PREFIX dev $L2TP_IF 
-ip link set dev $L2TP_IF mtu 1446
-babeld $L2TP_IF 
-EOF
-
-chmod 755 $TUNNELDIGGER_UPHOOK_SCRIPT 
-
-cat >$TUNNELDIGGER_DOWNHOOK_SCRIPT <<EOF
-#!/bin/sh
-babeld -x $L2TP_IF 
-EOF
-
-chmod 755 $TUNNELDIGGER_DOWNHOOK_SCRIPT 
-
 cat >/etc/babeld.conf <<EOF
 export-table 20
 interface $L2TP_IF wired true
@@ -128,12 +106,14 @@ EOF
 
 git clone https://github.com/${EXITNODE_REPO} -b anynode /opt/exitnode
 cp -r /opt/exitnode/src_client/etc/* /etc/
-#cp -r /opt/exitnode/src_client/opt/* /opt/
+cp /opt/exitnode/tunnel_hook $TUNNELDIGGER_HOME
 mkdir -p /var/lib/babeld
+
+sed -i.bak "s/<mesh_ip>/$MESH_IP/g" $TUNNELDIGGER_HOME/tunnel_hook
 
 UUID=$(uuidgen)
 
-TUNNEL_START="\/opt\/tunneldigger\/client\/tunneldigger -f -b $EXITNODE_IP:8942 -u $UUID -i $L2TP_IF -s \/opt\/tunneldigger\/client\/scripts\/up_hook.sh"
+TUNNEL_START="\/opt\/tunneldigger\/client\/tunneldigger -f -b $EXITNODE_IP:8942 -u $UUID -i $L2TP_IF -s \/opt\/tunneldigger\/tunnel_hook"
 
 sed -i.bak "s/<tunnel_start>/$TUNNEL_START/g" /etc/systemd/system/tunneldigger.service
 
@@ -142,10 +122,11 @@ sed -i 's/dns-nameservers.*/dns-nameservers 8.8.8.8/g' /etc/network/interfaces.d
 sed -i '/address/a \   \ dns-nameservers 8.8.8.8' /etc/network/interfaces.d/50-cloud-init.cfg 
 
 # start babeld and tunnel digger on reboot
+# TODO just start meshrouting, once ported from OpenWrt
 systemctl enable tunneldigger
-systemctl enable babeld
+#systemctl enable babeld
 
 service tunneldigger start
-service babeld start
+#service babeld start
 
 reboot now
