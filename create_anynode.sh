@@ -133,7 +133,7 @@ mkdir -p /var/lib/babeld
 
 UUID=$(uuidgen)
 
-TUNNEL_START="/opt/tunneldigger/client/tunneldigger -f -b $EXITNODE_IP:8942 -u $UUID -i $L2TP_IF -s /opt/tunneldigger/client/scripts/up_hook.sh"
+TUNNEL_START="\/opt\/tunneldigger\/client\/tunneldigger -f -b $EXITNODE_IP:8942 -u $UUID -i $L2TP_IF -s \/opt\/tunneldigger\/client\/scripts\/up_hook.sh"
 
 sed -i.bak "s/<tunnel_start>/$TUNNEL_START/g" /etc/systemd/system/tunneldigger.service
 
