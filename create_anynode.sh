@@ -3,20 +3,18 @@
 set -x
 set -e
 
-#IP=$1
-#GATEWAY_IP=$2
+EXITNODE_IP=$1
 
 MESH_IP=100.65.120.129
 MESH_PREFIX=32
 MESHNET=100.64.0.0/10
 ETH_IF=eth0
-#PUBLIC_IP=$IP
-#PUBLIC_SUBNET="$IP/29"
+L2TP_IF=l2tp0
 
 EXITNODE_REPO=sudomesh/exitnode
 TUNNELDIGGER_REPO=wlanslovenija/tunneldigger
 TUNNELDIGGER_COMMIT=210037aabf8538a0a272661e08ea142784b42b2c
-BABELD_REPO=sudomesh/babeld
+BABELD_REPO=jech/babeld
 
 
 KERNEL_VERSION=$(uname -r)
@@ -49,11 +47,7 @@ DEBIAN_FRONTEND=noninteractive apt-get install -yq --force-yes \
   perl \
   dnsmasq \
   procps \
-  python-psycopg2 \
   software-properties-common \
-  python \
-  python-dev \
-  python-pip \
   iproute \
   libnetfilter-conntrack3 \
   libevent-dev \
@@ -108,38 +102,40 @@ TUNNELDIGGER_DOWNHOOK_SCRIPT=$TUNNELDIGGER_HOME/client/scripts/down_hook.sh
 
 cat >$TUNNELDIGGER_UPHOOK_SCRIPT <<EOF
 #!/bin/sh
-ip link set \$3 up
-ip addr add $MESH_IP/$MESH_PREFIX dev \$3
-ip link set dev \$3 mtu 1446
-babeld -a \$3
+ip link set $L2TP_IF up
+ip addr add $MESH_IP/$MESH_PREFIX dev $L2TP_IF 
+ip link set dev $L2TP_IF mtu 1446
+babeld $L2TP_IF 
 EOF
 
 chmod 755 $TUNNELDIGGER_UPHOOK_SCRIPT 
 
 cat >$TUNNELDIGGER_DOWNHOOK_SCRIPT <<EOF
 #!/bin/sh
-babeld -x \$3
+babeld -x $L2TP_IF 
 EOF
 
 chmod 755 $TUNNELDIGGER_DOWNHOOK_SCRIPT 
 
 cat >/etc/babeld.conf <<EOF
+export-table 20
+interface $L2TP_IF wired true
 redistribute local ip $MESH_IP/$MESH_PREFIX allow
 redistribute local ip 0.0.0.0/0 proto 3 metric 128 allow
 redistribute if $ETH_IF metric 128
 redistribute local deny
 EOF
 
-git clone https://github.com/${EXITNODE_REPO} /opt/exitnode
+git clone https://github.com/${EXITNODE_REPO} -b anynode /opt/exitnode
 cp -r /opt/exitnode/src_client/etc/* /etc/
 #cp -r /opt/exitnode/src_client/opt/* /opt/
 mkdir -p /var/lib/babeld
 
-# Setup public ip in tunneldigger.cfg
-#CFG="$TUNNELDIGGER_HOME/broker/l2tp_broker.cfg"
+UUID=$(uuidgen)
 
-#sed -i.bak "s#address=[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+#address=$PUBLIC_IP#" $CFG
-#sed -i.bak "s#interface=lo#interface=$ETH_IF#" $CFG 
+TUNNEL_START="/opt/tunneldigger/client/tunneldigger -f -b $EXITNODE_IP:8942 -u $UUID -i $L2TP_IF -s /opt/tunneldigger/client/scripts/up_hook.sh"
+
+sed -i.bak "s/<tunnel_start>/$TUNNEL_START/g" /etc/systemd/system/tunneldigger.service
 
 # for Digital Ocean only
 sed -i 's/dns-nameservers.*/dns-nameservers 8.8.8.8/g' /etc/network/interfaces.d/50-cloud-init.cfg
