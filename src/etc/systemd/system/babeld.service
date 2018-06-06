@@ -5,7 +5,7 @@ After=network.target auditd.service
 [Service]
 Type=simple
 WorkingDirectory=/usr/local/bin
-ExecStart=/usr/local/bin/babeld -F -S /var/lib/babeld/state -c /etc/babeld.conf
+ExecStart=/usr/local/bin/babeld -S /var/lib/babeld/state -c /etc/babeld.conf
 KillMode=process
 Restart=on-failure
 PIDFile=/var/run/babeld.pid

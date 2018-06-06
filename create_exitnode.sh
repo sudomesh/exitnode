@@ -64,7 +64,8 @@ DEBIAN_FRONTEND=noninteractive apt-get install -yq --force-yes \
   libnfnetlink-dev \
   libffi-dev \
   libevent-dev \
-  tmux
+  tmux \
+  netcat-openbsd
 
 DEBIAN_FRONTEND=noninteractive apt-get install -yq --force-yes \
   cmake \
@@ -74,8 +75,9 @@ DEBIAN_FRONTEND=noninteractive apt-get install -yq --force-yes \
   pkg-config
 
 mkdir ~/babel_build
-git clone https://github.com/sudomesh/babeld.git ~/babel_build/
+git clone https://github.com/jech/babeld.git ~/babel_build/
 cd ~/babel_build
+git checkout tags/babeld-1.8.2
 
 make && make install
 
@@ -115,19 +117,22 @@ cat >$TUNNELDIGGER_UPHOOK_SCRIPT <<EOF
 ip link set \$3 up
 ip addr add $MESH_IP/$MESH_PREFIX dev \$3
 ip link set dev \$3 mtu \$4
-babeld -a \$3
+# babeld is listening on port 31337
+(echo "interface \$3") | nc -q1 ::1 31337
 EOF
 
 chmod 755 $TUNNELDIGGER_UPHOOK_SCRIPT 
 
 cat >$TUNNELDIGGER_DOWNHOOK_SCRIPT <<EOF
 #!/bin/sh
-babeld -x \$3
+# babeld is listening on port 31337
+(echo "flush interface \$3") | nc -q1 ::1 31337
 EOF
 
 chmod 755 $TUNNELDIGGER_DOWNHOOK_SCRIPT 
 
 cat >/etc/babeld.conf <<EOF
+local-port-readwrite 31337
 redistribute local ip $MESH_IP/$MESH_PREFIX allow
 redistribute local ip 0.0.0.0/0 proto 3 metric 128 allow
 redistribute if $ETH_IF metric 128
