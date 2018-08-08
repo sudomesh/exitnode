@@ -1,6 +1,8 @@
 exitnode
 ========
 
+[![Build Status](https://travis-ci.org/sudomesh/exitnode.svg?branch=master)](https://travis-ci.org/sudomesh/exitnode)
+
 # Intro #
 
 Our exit node is currently a single relay and exit server. All of the public traffic on peoplesopen.net access points is routed over an l2tp tunnel with tunneldigger through our exit server.

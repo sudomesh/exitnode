@@ -1,0 +1,7 @@
+sudo: required
+
+language: bash 
+
+script:
+- ./test
+
