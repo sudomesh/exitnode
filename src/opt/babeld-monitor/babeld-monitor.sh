@@ -9,7 +9,7 @@ wait_for_babeld() {
   local try_sleep=5
 
   while [ "$try_count" -lt "$try_max" ]; do
-    babeld -i
+    babeld-info
     local exit_status=$?
     if [[ exit_status -eq 0 ]]; then
       echo "babeld initialized."
@@ -39,8 +39,8 @@ else
     
     # add tunnel interfaces to babeld
     echo "add tunnel interfaces to babeld..."
-    ip addr | tr ' ' '\n' | grep -E "l2tp[0-9\-]+$" | sort | uniq | xargs -L 1 babeld -a 
-    babeld -i | head -n1
+    ip addr | tr ' ' '\n' | grep -E "l2tp[0-9\-]+$" | sort | uniq | xargs -I {} bash -c '(echo "interface {}") | nc -q1 ::1 31337'
+    babeld-info
     echo "add tunnel interfaces to babeld done."
 
     echo "babeld restarted."

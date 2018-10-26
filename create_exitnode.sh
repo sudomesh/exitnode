@@ -16,6 +16,8 @@ PUBLIC_SUBNET="$IP/29"
 EXITNODE_REPO=sudomesh/exitnode
 TUNNELDIGGER_REPO=wlanslovenija/tunneldigger
 TUNNELDIGGER_COMMIT=210037aabf8538a0a272661e08ea142784b42b2c
+BABEL_REPO=/jech/babeld
+BABEL_TAG="babeld-1.8.2"
 
 
 KERNEL_VERSION=$(uname -r)
@@ -29,7 +31,7 @@ DEBIAN_FRONTEND=noninteractive apt-get update
 
 if [ "$release_name" == '"Ubuntu"' ]; then
   DEBIAN_FRONTEND=noninteractive apt-get install -yq --force-yes \
-    linux-image-extra-$(uname -r)
+      linux-image-extra-$(uname -r)
 fi 
 
 DEBIAN_FRONTEND=noninteractive apt-get install -yq --force-yes \
@@ -64,7 +66,8 @@ DEBIAN_FRONTEND=noninteractive apt-get install -yq --force-yes \
   libnfnetlink-dev \
   libffi-dev \
   libevent-dev \
-  tmux
+  tmux \
+  netcat-openbsd
 
 DEBIAN_FRONTEND=noninteractive apt-get install -yq --force-yes \
   cmake \
@@ -73,9 +76,15 @@ DEBIAN_FRONTEND=noninteractive apt-get install -yq --force-yes \
   build-essential \
   pkg-config
 
-mkdir ~/babel_build
-git clone https://github.com/sudomesh/babeld.git ~/babel_build/
-cd ~/babel_build
+BABEL_BUILD=/root/babel_build
+if [ -e $BABEL_BUILD ]; then
+    rm -r $BABEL_BUILD
+fi
+
+mkdir $BABEL_BUILD
+cd $BABEL_BUILD 
+git clone https://github.com/$BABEL_REPO $BABEL_BUILD 
+git checkout tags/$BABEL_TAG
 
 make && make install
 
@@ -99,7 +108,10 @@ pip install netfilter
 pip install virtualenv
 
 TUNNELDIGGER_HOME=/opt/tunneldigger
-git clone https://github.com/${TUNNELDIGGER_REPO} $TUNNELDIGGER_HOME
+if [ -e "$TUNNELDIGGER_HOME" ]; then
+    rm -r $TUNNELDIGGER_HOME
+fi
+git clone https://github.com/$TUNNELDIGGER_REPO $TUNNELDIGGER_HOME
 cd $TUNNELDIGGER_HOME
 git checkout $TUNNELDIGGER_COMMIT
 virtualenv $TUNNELDIGGER_HOME/broker/env_tunneldigger
@@ -115,19 +127,22 @@ cat >$TUNNELDIGGER_UPHOOK_SCRIPT <<EOF
 ip link set \$3 up
 ip addr add $MESH_IP/$MESH_PREFIX dev \$3
 ip link set dev \$3 mtu \$4
-babeld -a \$3
+# babeld is listening on port 31337
+(echo "interface \$3") | nc -q1 ::1 31337
 EOF
 
 chmod 755 $TUNNELDIGGER_UPHOOK_SCRIPT 
 
 cat >$TUNNELDIGGER_DOWNHOOK_SCRIPT <<EOF
 #!/bin/sh
-babeld -x \$3
+# babeld is listening on port 31337
+(echo "flush interface \$3") | nc -q1 ::1 31337
 EOF
 
 chmod 755 $TUNNELDIGGER_DOWNHOOK_SCRIPT 
 
 cat >/etc/babeld.conf <<EOF
+local-port-readwrite 31337
 redistribute local ip $MESH_IP/$MESH_PREFIX allow
 redistribute local ip 0.0.0.0/0 proto 3 metric 128 allow
 redistribute if $ETH_IF metric 128
@@ -146,11 +161,15 @@ MESHNET="$MESHNET"
 DEFAULT_ROUTE="$(ip route | head -n1 | sed 's/onlink/proto static/g')"
 EOF
 
-git clone https://github.com/${EXITNODE_REPO} /opt/exitnode
-cp -r /opt/exitnode/src/etc/* /etc/
-cp -r /opt/exitnode/src/opt/* /opt/
+EXITNODE_HOME=/opt/exitnode
+if [ -e $EXITNODE_HOME ]; then
+    rm -r $EXITNODE_HOME 
+fi
+git clone https://github.com/$EXITNODE_REPO -b upgrade-babeld $EXITNODE_HOME 
+cp -r $EXITNODE_HOME/src/etc/* /etc/
+cp -r $EXITNODE_HOME/src/opt/* /opt/
 mkdir -p /var/lib/babeld
-cp /opt/exitnode/l2tp_broker.cfg $TUNNELDIGGER_HOME/broker/l2tp_broker.cfg
+cp $EXITNODE_HOME/l2tp_broker.cfg $TUNNELDIGGER_HOME/broker/l2tp_broker.cfg
 
 # Setup public ip in tunneldigger.cfg
 CFG="$TUNNELDIGGER_HOME/broker/l2tp_broker.cfg"
