@@ -94,7 +94,7 @@ do
   then
     echo "$module already in /etc/modules"
   else
-    echo "\n$module" >> /etc/modules
+    echo -e "\n$module" >> /etc/modules
   fi
   modprobe $module
 done
