@@ -29,7 +29,7 @@ DEBIAN_FRONTEND=noninteractive apt-get update
 
 if [ "$release_name" = '"Ubuntu"' ]; then
   DEBIAN_FRONTEND=noninteractive apt-get install -yq --force-yes \
-      linux-image-extra-$(uname -r)
+      "linux-image-extra-$(uname -r)"
 fi 
 
 DEBIAN_FRONTEND=noninteractive apt-get install -yq --force-yes \
@@ -96,7 +96,7 @@ do
   else
     echo -ne "\n$module" >> /etc/modules
   fi
-  modprobe $module
+  modprobe "$module"
 done
 
 # see https://askubuntu.com/questions/561377/pip-wont-run-throws-errors-instead
