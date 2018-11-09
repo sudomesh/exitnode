@@ -113,7 +113,7 @@ git clone https://github.com/$TUNNELDIGGER_REPO $TUNNELDIGGER_HOME
 cd $TUNNELDIGGER_HOME
 git checkout $TUNNELDIGGER_COMMIT
 virtualenv $TUNNELDIGGER_HOME/broker/env_tunneldigger
-source broker/env_tunneldigger/bin/activate
+. broker/env_tunneldigger/bin/activate
 cd broker
 python setup.py install
 
