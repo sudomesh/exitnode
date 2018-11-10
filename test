@@ -2,8 +2,8 @@
 
 THIS_DIR="${BASH_SOURCE%/*}"
 
-# TODO: test exitnode thoroughly
-# ideas:
+shellcheck "create_exitnode.sh"
+# more ideas:
 # * test systemd service files for syntax correctness 
 # * run create_exitnode.sh in a docker container, then make sure it runs well
 
