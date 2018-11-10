@@ -17,9 +17,7 @@ TUNNELDIGGER_COMMIT=210037aabf8538a0a272661e08ea142784b42b2c
 BABEL_REPO=/jech/babeld
 BABEL_TAG="babeld-1.8.2"
 
-
-KERNEL_VERSION=$(uname -r)
-echo kernel version [$KERNEL_VERSION]
+echo kernel version ["$(uname -r)"]
 
 release_info="$(cat /etc/*-release)"
 echo "release_info=$release_info"
