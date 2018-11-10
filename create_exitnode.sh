@@ -171,6 +171,8 @@ cp $EXITNODE_HOME/l2tp_broker.cfg $TUNNELDIGGER_HOME/broker/l2tp_broker.cfg
 # Setup public ip in tunneldigger.cfg
 CFG="$TUNNELDIGGER_HOME/broker/l2tp_broker.cfg"
 
+# Disabling stylistic shellcheck warning to favor readability.
+# shellcheck disable=SC1117
 sed -i.bak "s#address=[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+#address=$PUBLIC_IP#" $CFG
 sed -i.bak "s#interface=lo#interface=$ETH_IF#" $CFG 
 
