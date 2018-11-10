@@ -17,9 +17,7 @@ TUNNELDIGGER_COMMIT=210037aabf8538a0a272661e08ea142784b42b2c
 BABEL_REPO=/jech/babeld
 BABEL_TAG="babeld-1.8.2"
 
-
-KERNEL_VERSION=$(uname -r)
-echo kernel version [$KERNEL_VERSION]
+echo kernel version ["$(uname -r)"]
 
 release_info="$(cat /etc/*-release)"
 echo "release_info=$release_info"
@@ -27,9 +25,9 @@ release_name="$(echo "$release_info" | grep ^NAME= | cut -d'=' -f2)"
 echo "release_name=[$release_name]"
 DEBIAN_FRONTEND=noninteractive apt-get update
 
-if [ "$release_name" == '"Ubuntu"' ]; then
+if [ "$release_name" = '"Ubuntu"' ]; then
   DEBIAN_FRONTEND=noninteractive apt-get install -yq --force-yes \
-      linux-image-extra-$(uname -r)
+      "linux-image-extra-$(uname -r)"
 fi 
 
 DEBIAN_FRONTEND=noninteractive apt-get install -yq --force-yes \
@@ -94,9 +92,9 @@ do
   then
     echo "$module already in /etc/modules"
   else
-    echo -ne "\n$module" >> /etc/modules
+    echo "$module" >> /etc/modules
   fi
-  modprobe $module
+  modprobe "$module"
 done
 
 # see https://askubuntu.com/questions/561377/pip-wont-run-throws-errors-instead
@@ -113,7 +111,8 @@ git clone https://github.com/$TUNNELDIGGER_REPO $TUNNELDIGGER_HOME
 cd $TUNNELDIGGER_HOME
 git checkout $TUNNELDIGGER_COMMIT
 virtualenv $TUNNELDIGGER_HOME/broker/env_tunneldigger
-source broker/env_tunneldigger/bin/activate
+# shellcheck disable=SC1091
+. broker/env_tunneldigger/bin/activate
 cd broker
 python setup.py install
 
@@ -172,6 +171,8 @@ cp $EXITNODE_HOME/l2tp_broker.cfg $TUNNELDIGGER_HOME/broker/l2tp_broker.cfg
 # Setup public ip in tunneldigger.cfg
 CFG="$TUNNELDIGGER_HOME/broker/l2tp_broker.cfg"
 
+# Disabling stylistic shellcheck warning to favor readability.
+# shellcheck disable=SC1117
 sed -i.bak "s#address=[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+#address=$PUBLIC_IP#" $CFG
 sed -i.bak "s#interface=lo#interface=$ETH_IF#" $CFG 
 
