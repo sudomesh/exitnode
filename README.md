@@ -10,20 +10,40 @@ In this way, creating a new exit server would essentially create a new "mesh". F
 
 __work in progress__
 
-# Installation #
+Tested on digitalocean servers running ubuntu 16.04. Also tested on Debian Stretch.
 
-(is being tested on digitalocean ubuntu 16.04)
+# Usage #
 
-## Ubuntu ##
+Get access to a server (e.g. on digitalocean or some other place) running Ubuntu 16.04 or Debian Stretch. Then:
 
-Create a server (e.g., digitalocean on some other place) with Ubuntu 16.04 on it. 
+0) Clone this repo on your local computer.
 
-Clone this repository on your local machine.
-
-Now run: 
+1) Copy the `create_exitnode.sh` script onto your soon-to-be-exitnode server:
 
 ```
-ssh root@[ip exit node] 'bash -s' < create_exitnode.sh [ip exit node]
+scp create_exitnode.sh <user>@<exitnode-ip>
+```
+
+2) Log into the server:
+```
+ssh <user>@<exitnode-ip>
+```
+
+3) Determine the server's default network interface:
+
+```
+ip route
+```
+
+```
+default via 208.70.31.126 dev eth0
+```
+In the above example, this would be `eth0`.
+
+4) Execute the `create_exitnode.sh` script as root, where `<exitnode-ip>` is the public ip of your server, and `<default-interface-name>` is the name you just found in step 3:
+
+```
+sudo create_exitnode.sh <exitnode-ip> <default-interface-name>
 ```
 
 Expected output should be something like:
@@ -39,6 +59,21 @@ tunneldigger.service is not a native service, redirecting to systemd-sysv-instal
 Executing /lib/systemd/systemd-sysv-install enable tunneldigger
 babeld.service is not a native service, redirecting to systemd-sysv-install
 Executing /lib/systemd/systemd-sysv-install enable babeld
+```
+
+Check `/var/log/syslog` for evidence that the tunneldigger broker is running:
+
+```
+[INFO/tunneldigger.broker] Initializing the tunneldigger broker.
+[INFO/tunneldigger.broker] Registered script '/opt/tunneldigger/broker/scripts/up_hook.sh' for hook 'session.up'.
+[INFO/tunneldigger.broker] Registered script '/opt/tunneldigger/broker/scripts/down_hook.sh' for hook 'session.down'.
+[INFO/tunneldigger.broker] Maximum number of tunnels is 1024.
+[INFO/tunneldigger.broker] Tunnel identifier base is 100.
+[INFO/tunneldigger.broker] Tunnel port base is 20000.
+[INFO/tunneldigger.broker] Namespace is experiments.
+[INFO/tunneldigger.broker] Listening on <exitnode-ip>:443.
+[INFO/tunneldigger.broker] Listening on <exitnode-ip>:8942.
+[INFO/tunneldigger.broker] Broker initialized.
 ```
 
 ## Configure Home Node to use exit node 

@@ -1,5 +1,20 @@
 #!/bin/sh
 
+if [ "$#" -ne 2 ]; then
+  echo "You did not pass the correct number of arguments.
+
+If you are not sure how to use this script, have a look at the README.md.
+This script installs software and writes config files onto the computer on which it is executed.
+
+Usage: sudo create_exitnode.sh <PUBLIC_IP> <DEFAULT_INTERFACE_NAME>" 1>&2
+  exit 1
+fi
+
+if [ "$(id -u)" != "0" ]; then
+  echo "This script must be run as root" 1>&2
+  exit 1
+fi
+
 set -x
 set -e
 
@@ -9,7 +24,7 @@ PUBLIC_SUBNET="$PUBLIC_IP/29"
 MESH_IP=100.64.0.42
 MESH_PREFIX=32
 MESHNET=100.64.0.0/10
-ETH_IF=eth0
+ETH_IF=$2
 
 EXITNODE_REPO=sudomesh/exitnode
 TUNNELDIGGER_REPO=wlanslovenija/tunneldigger
