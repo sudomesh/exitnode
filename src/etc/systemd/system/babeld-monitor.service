@@ -7,7 +7,7 @@ Type=simple
 Nice=19
 IOSchedulingClass=2
 IOSchedulingPriority=7
-ExecStart=/opt/babeld-monitor/babeld-monitor.sh 
+ExecStart=/bin/bash -c 'PATH=/opt/mesh-tools/:$PATH /opt/babeld-monitor/babeld-monitor.sh'
 
 [Install]
 WantedBy=multi-user.target
